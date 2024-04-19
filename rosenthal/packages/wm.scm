@@ -129,7 +129,7 @@ command line tool called @code{udcli} that incorporates the library.")
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://gitlab.freedesktop.org/wlroots/wlroots.git")
+                      (url "https://github.com/hyprwm/wlroots-hyprland")
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
