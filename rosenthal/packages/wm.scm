@@ -121,12 +121,12 @@ command line tool called @code{udcli} that incorporates the library.")
 
 (define wlroots-for-hyprland
   (let ((base wlroots)
-        (revision "255")
-        (commit "50eae512d9cecbf0b3b1898bb1f0b40fa05fe19b"))
+        (revision "0")
+        (commit "611a4f24cd2384378f6e500253983107c6656c64"))
     (package
       (inherit base)
       (name "wlroots")
-      (version (git-version "0.17.0" revision commit))
+      (version (git-version "0.18.0-dev-hyprland" revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -135,7 +135,7 @@ command line tool called @code{udcli} that incorporates the library.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0bwpppb86nfjg2lw62y449f9iz2v8djqb8n6g1cn45vqnwj8hxf1"))))
+                  "0wpqa241656rcnpszkq14ikz4dxsal2xrrc7ryn22xmciw4rkxxw"))))
       (propagated-inputs
        (modify-inputs (package-propagated-inputs wlroots)
          (prepend libdrm-for-hyprland)
@@ -196,15 +196,15 @@ protocols used by Hyprland to bridge the aforementioned gap.")
   (origin
     (method url-fetch)
     (uri (string-append "https://github.com/hyprwm/Hyprland" "/raw/"
-                        "c5e28ebcfe00a510922779b2c568cfa52a317445"
+                        "1ebc32f5f4b04c913fb6301b886e016afec4c20e"
                         "/nix/patches/meson-build.patch"))
     (sha256
-     (base32 "00i7c98ignfgkk3x1r1masmlj92xzb8cdb7nyfhivbfkdlfyzgpj"))))
+     (base32 "0v45zvh8py2awmhmi7ymr8xj0kc9ch9y4i62y4xmq2g7cmq9j6h9"))))
 
 (define-public hyprland
   (package
     (name "hyprland")
-    (version "0.38.1")
+    (version "0.39.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/hyprwm/Hyprland"
@@ -222,7 +222,7 @@ protocols used by Hyprland to bridge the aforementioned gap.")
               (patches (list hyprland-unbundle-wlroots-patch))
               (sha256
                (base32
-                "1avkzdcgyk65p44nwl9w8sv4iq5xs13i7i66jsya9z06q1f3d1hs"))))
+                "11z7zmy4084ax0g0c2h21ji9znd2drgf0xkdllsmcdnvv27wbla8"))))
     (build-system meson-build-system)
     (arguments
      (list #:build-type "release"
