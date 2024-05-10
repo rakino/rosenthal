@@ -3,6 +3,4 @@
  (version 0)
  (;; primary: "220F 98D9 5E86 204C 0036  DA7B 6DEC 4360 408B 4185"
   ("F4C2 D1DF 3FDE EA63 D1D3  0776 ACC6 6D09 CA52 8292"
-   (name "Hilton Chain")))
- (("13E7 6CD6 E649 C28C 3385  4DF5 5E5A A665 6149 17F7"
-   (name "Hilton Chain (revoked)"))))
+   (name "Hilton Chain"))))
