@@ -108,7 +108,7 @@ command line tool called @code{udcli} that incorporates the library.")
   (package
     (inherit wayland-protocols)
     (name "wayland-protocols")
-    (version "1.34")
+    (version "1.36")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -117,7 +117,7 @@ command line tool called @code{udcli} that incorporates the library.")
                     "wayland-protocols-" version ".tar.xz"))
               (sha256
                (base32
-                "1sxgvis0abkymc02nhx2svm60myiq3shvy759sphpxl5rp52g6y5"))))))
+                "14kyxywpfkgpjpkrybs28q1s2prnz30k1b4zap5a3ybrbvh4vzbi"))))))
 
 (define wlroots-for-hyprland
   (let ((base wlroots)
