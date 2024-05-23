@@ -35,6 +35,7 @@
   #:use-module (gnu packages web)
   #:use-module (gnu packages wm)
   #:use-module (gnu packages xdisorg)
+  #:use-module (gnu packages xml)
   #:use-module (rosenthal packages freedesktop))
 
 (define cairo-for-hyprland
@@ -286,6 +287,30 @@ more.")
      "This package provides the official implementation for hypr configuration
 language used in @code{hyprland}.")
     (license license:gpl3+)))
+
+(define-public hyprwayland-scanner
+  (package
+    (name "hyprwayland-scanner")
+    (version "0.3.4")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/hyprwm/hyprwayland-scanner")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0mi0kawfw311ybiy4xipy1n20nvjphkfqzgnd8jxxbkhjkwn0jhg"))))
+    (build-system cmake-build-system)
+    (arguments (list #:tests? #f))      ;No tests.
+    (inputs (list pugixml))
+    (native-inputs (list gcc-13 pkg-config))
+    (home-page "https://github.com/hyprwm/hyprwayland-scanner")
+    (synopsis "Hyprland implementation of wayland-scanner, in and for C++")
+    (description
+     "This package provides a Hyprland implementation of wayland-scanner, in and
+for C++.")
+    (license license:bsd-3)))
 
 (define-public grimblast
   (package
