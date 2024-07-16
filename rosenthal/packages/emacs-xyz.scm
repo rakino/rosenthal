@@ -9,6 +9,29 @@
   #:use-module (guix git-download)
   #:use-module (guix packages))
 
+(define-public emacs-pcmpl-tailscale
+  (let ((commit "acd6bce54af506b0450cf6aa1068f63d4e25c8ce")
+        (revision "0"))
+    (package
+      (name "emacs-pcmpl-tailscale")
+      (version (git-version "0.0.1" revision commit))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://git.thanosapollo.org/pcmpl-tailscale")
+               (commit commit)))
+         (file-name (git-file-name name version))
+         (sha256
+          (base32 "0lk808ahy8ckg2fr2pqk3p5if81nqrwsajrgqafv9hgn8w4l1x0p"))))
+      (build-system emacs-build-system)
+      (home-page "https://git.thanosapollo.org/pcmpl-tailscale")
+      (synopsis "Enhanced shell completions for tailscale")
+      (description
+       "This package provides enhanced completions for the tailscale command
+and it's subcommands.")
+      (license license:gpl3+))))
+
 ;; https://issues.guix.gnu.org/59552
 (define-public emacs-wakatime-mode
   ;; No release since May 5, 2015.
