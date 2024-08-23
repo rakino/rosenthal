@@ -13,7 +13,8 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages elf)
   #:use-module (gnu packages gcc)
-  #:use-module (gnu packages glib))
+  #:use-module (gnu packages glib)
+  #:use-module (gnu packages nss))
 
 (define license
   (@@ (guix licenses) license))
@@ -84,7 +85,7 @@ protocols out-of-the-box.")
 (define-public cloudflare-warp-bin
   (package
     (name "cloudflare-warp-bin")
-    (version "2023.10.120")
+    (version "2024.6.497")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://pkg.cloudflareclient.com"
@@ -92,7 +93,7 @@ protocols out-of-the-box.")
                                   "cloudflare-warp_" version "-1_amd64.deb"))
               (sha256
                (base32
-                "138c0yqp2d2cw89jsbfcii0r1fz0ll8wyf7kqs4pi5hb0mffwz05"))))
+                "1ry62ck61gn4bxnkih3775pdlndp2ldxwifbjkxbj3wfd4f67xiv"))))
     (build-system copy-build-system)
     (arguments
      (list #:install-plan
@@ -117,7 +118,11 @@ protocols out-of-the-box.")
                                   (string-append
                                    #$(this-package-input "dbus") "/lib")
                                   (string-append
-                                   #$(this-package-input "glibc") "/lib"))
+                                   #$(this-package-input "glibc") "/lib")
+                                  (string-append
+                                   #$(this-package-input "nspr") "/lib")
+                                  (string-append
+                                   #$(this-package-input "nss") "/lib/nss"))
                                  ":")))
                      (define (patch-elf file)
                        (format #t "Patching ~a ..." file)
@@ -131,7 +136,7 @@ protocols out-of-the-box.")
                                 (string-append #$output "/bin")))))))))
     (supported-systems '("x86_64-linux"))
     (native-inputs (list patchelf))
-    (inputs (list dbus `(,gcc "lib") glibc))
+    (inputs (list dbus `(,gcc "lib") glibc nspr nss))
     (home-page "https://1.1.1.1/")
     (synopsis "Cloudflare WARP client")
     (description
