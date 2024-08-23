@@ -1,4 +1,4 @@
-;; SPDX-FileCopyrightText: 2022-2023 Hilton Chain <hako@ultrarare.space>
+;; SPDX-FileCopyrightText: 2022-2024 Hilton Chain <hako@ultrarare.space>
 ;;
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 
@@ -14,7 +14,7 @@
 (define-public cloudflared
   (package
     (name "cloudflared")
-    (version "2024.7.0")
+    (version "2024.8.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -26,7 +26,7 @@
               ;; (snippet '(delete-file-recursively "vendor"))
               (sha256
                (base32
-                "01id2kgfyihyx9r7l2i4jk51dygl0g5ppjsnnnwfgwz4clbcq3i4"))))
+                "1q97279qjajbdblg6ggvgkw2x02p8vvzcv3f9jw5na9psdq6hif3"))))
     (build-system go-build-system)
     (arguments
      (list #:go go-1.22
