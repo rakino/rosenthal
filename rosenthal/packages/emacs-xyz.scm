@@ -1,4 +1,4 @@
-;; SPDX-FileCopyrightText: 2022-2023 Hilton Chain <hako@ultrarare.space>
+;; SPDX-FileCopyrightText: 2022-2024 Hilton Chain <hako@ultrarare.space>
 ;;
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 
@@ -35,8 +35,8 @@ and it's subcommands.")
 ;; https://issues.guix.gnu.org/59552
 (define-public emacs-wakatime-mode
   ;; No release since May 5, 2015.
-  (let ((commit "ef923829912c3854d230834f81083814b7c9d992")
-        (revision "55"))
+  (let ((commit "1c5b2254dd72f2ff504d6a6189a8c10be03a98d1")
+        (revision "60"))
     (package
       (name "emacs-wakatime-mode")
       ;; 1.0.2 on commit 32a0154cd4bbd525d354997e6b12c6a9726d0b43, not tagged
@@ -49,7 +49,7 @@ and it's subcommands.")
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0m29817s2din4n42pflvzg2538i91s0n06y78pf8q94qf0mfspcl"))))
+                  "00qv6b756qiaqrmfg1w03psnsdj0iaz3sp50ib4kmdm2g9vgxl1s"))))
       (build-system emacs-build-system)
       (arguments
        (list #:phases
