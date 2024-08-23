@@ -1,4 +1,4 @@
-;; SPDX-FileCopyrightText: 2023 Hilton Chain <hako@ultrarare.space>
+;; SPDX-FileCopyrightText: 2023-2024 Hilton Chain <hako@ultrarare.space>
 ;;
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 
@@ -51,7 +51,7 @@ protocols out-of-the-box.")
 (define-public mihomo-bin
   (package
     (name "mihomo-bin")
-    (version "1.18.0")
+    (version "1.18.7")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -59,7 +59,7 @@ protocols out-of-the-box.")
                     version "/mihomo-linux-amd64-v" version ".gz"))
               (sha256
                (base32
-                "1b2ljl14k4vbpq4dgms1hk0iys161afyr1j2hl2hga70ay6n7j7i"))))
+                "1mfbh21x1vzmi0vglk68r21rfbklllxpa5q4978li7n44r0v6hbr"))))
     (build-system copy-build-system)
     (arguments
      (list #:install-plan
