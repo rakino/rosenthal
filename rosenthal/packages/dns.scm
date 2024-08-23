@@ -1,4 +1,4 @@
-;; SPDX-FileCopyrightText: 2022, 2023 Hilton Chain <hako@ultrarare.space>
+;; SPDX-FileCopyrightText: 2022-2024 Hilton Chain <hako@ultrarare.space>
 ;;
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 
@@ -11,8 +11,8 @@
 
 (define-public dnsmasq-china-list
   ;; No version.
-  (let ((commit "5550ed5e0bb893d0021523046b91e54f05e7c74f")
-        (revision "15"))
+  (let ((commit "a460349440fef37e7e72b22080859a38b5443863")
+        (revision "16"))
     (package
       (name "dnsmasq-china-list")
       (version (git-version "0" revision commit))
@@ -24,7 +24,7 @@
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "12y6cli5fzd4y96rlwdsyiv57k6din1pjs3dp58r0iw140bdz0kr"))))
+                  "1i32bgwf0lnz9369vwnjvl2ja5f5ip14bdaf7b28i3w05qhg7738"))))
       (build-system copy-build-system)
       (arguments
        (list #:install-plan
