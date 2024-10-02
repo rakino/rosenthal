@@ -242,14 +242,14 @@ monster-in-the-middle}.")
 (define-public tailscale-bin
   (package
     (name "tailscale-bin")
-    (version "1.72.1")
+    (version "1.74.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://pkgs.tailscale.com"
                                   "/stable/tailscale_" version "_amd64.tgz"))
               (sha256
                (base32
-                "1dngi0cs3p423b9j5ihypq3s95w4ns0pjlmyi54kpfwi31nk3s0i"))))
+                "12196z8dhdzxq8mjj0rlvhr6wchmi6z33ym36yqqrp4m52xjz7q5"))))
     (build-system copy-build-system)
     (arguments
      (list #:install-plan
