@@ -375,55 +375,22 @@ list, power save will be disabled."))
    "The tailscale package to use.")
 
   (iptables
-   (file-like iptables)
+   (file-like iptables-nft)
    "The iptables package to use.")
 
   (log-file
    (string "/var/log/tailscaled.log")
    "Path to log file.")
 
-  (bird-socket
-   maybe-string
-   "Path of the bird UNIX socket.")
-
-  (debug-server
-   maybe-string
-   "Listen address ([ip]:port) of optional debug server.")
-
-  (port
-   (integer 0)
-   "UDP port to listen for WireGuard and peer-to-peer traffic; 0 means
-automatically select.")
-
   (socket
-   (string "/var/run/tailscale/tailscaled.sock")
+   (string "/run/tailscale/tailscaled.sock")
    "Path of the service UNIX socket.")
-
-  (http-proxy-server
-   maybe-string
-   "[ip]:port to run an outbound HTTP proxy (e.g. \"localhost:8080\").")
-
-  (socks5-server
-   maybe-string
-   "[ip]:port to run a SOCKS5 server (e.g. \"localhost:1080\").")
 
   (state-directory
    (string "/var/lib/tailscale")
    "Path to directory for storage of config state, TLS certs, temporary incoming
 Taildrop files, etc.  If empty, it's derived from @code{state-file} when
 possible.")
-
-  (state-file
-   maybe-string
-   "Absolute path of state file; use @code{kube:<secret-name>} to use Kubernetes
-secrets or @code{arn:aws:ssm:...} to store in AWS SSM; use 'mem:' to not store
-state and register as an ephemeral node.  If empty and @code{state-directory} is
-provided, the default is @code{<state-directory>/tailscaled.state}.")
-
-  (tunnel-interface
-   (string "tailscale0")
-   "Tunnel interface name; use @code{\"userspace-networking\"} (beta) to not use
-TUN.")
 
   (upload-log?
    (boolean #f)
@@ -433,6 +400,10 @@ to #f.")
   (verbosity
    (integer 0)
    "Log verbosity level; 0 is default, 1 or higher are increasingly verbose.")
+
+  (extra-options
+   (list-of-strings '())
+   "List of extra options.")
   (no-serialization))
 
 (define (tailscale-log-rotations config)
@@ -441,9 +412,8 @@ to #f.")
 
 (define tailscale-shepherd-service
   (match-record-lambda <tailscale-configuration>
-      (tailscale iptables log-file bird-socket debug-server port socket
-                 http-proxy-server socks5-server state-directory state-file
-                 tunnel-interface upload-log? verbosity)
+      (tailscale iptables log-file socket state-directory
+                 upload-log? verbosity extra-options)
     (let ((environment
            #~(list (string-append "PATH="
                                   (string-join
@@ -458,29 +428,13 @@ to #f.")
               #~(make-forkexec-constructor
                  (list
                   #$(file-append tailscale "/bin/tailscaled")
-                  #$@(if (maybe-value-set? bird-socket)
-                         `("-bird-socket" ,bird-socket)
-                         '())
-                  #$@(if (maybe-value-set? debug-server)
-                         `("-debug" ,debug-server)
-                         '())
                   #$@(if upload-log?
                          '()
                          '("-no-logs-no-support"))
-                  #$@(if (maybe-value-set? http-proxy-server)
-                         `("-outbound-http-proxy-listen" ,http-proxy-server)
-                         '())
-                  "-port" #$(number->string port)
                   "-socket" #$socket
-                  #$@(if (maybe-value-set? socks5-server)
-                         `("-socks5-server" ,socks5-server)
-                         '())
-                  #$@(if (maybe-value-set? state-file)
-                         `("-state" ,state-file)
-                         '())
                   "-statedir" #$state-directory
-                  "-tun" #$tunnel-interface
-                  "-verbose" #$(number->string verbosity))
+                  "-verbose" #$(number->string verbosity)
+                  #$@extra-options)
                  #:environment-variables #$environment
                  #:log-file #$log-file))
              (stop #~(make-kill-destructor)))))))
