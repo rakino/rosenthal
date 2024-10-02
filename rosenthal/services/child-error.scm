@@ -146,9 +146,6 @@
    "The cloudflared executable.")
 
   ;; Tunnel options
-  (metrics
-   (string "localhost:")
-   "Listen address for metrics reporting.")
   (log-level
    (string "info")
    "Application logging level (@code{debug}, @code{info}, @code{warn},
@@ -166,12 +163,6 @@ headers.  This can expose sensitive information in your logs.")
   (token
    (string "")
    "The Tunnel token.")
-  (http2-origin?
-   (boolean #f)
-   "Enable HTTP/2 origin servers.")
-  (post-quantum?
-   (boolean #f)
-   "Create an experimental post-quantum secure tunnel.")
   (extra-options
    (list-of-strings '())
    "List of extra options.")
@@ -183,8 +174,8 @@ headers.  This can expose sensitive information in your logs.")
 
 (define cloudflare-tunnel-shepherd-service
   (match-record-lambda <cloudflare-tunnel-configuration>
-      (cloudflared metrics log-level log-file extra-tunnel-options
-                   token http2-origin? post-quantum? extra-options)
+      (cloudflared log-level log-file extra-tunnel-options
+                   token extra-options)
     (list (shepherd-service
            (documentation "Run cloudflared.")
            (provision '(cloudflare-tunnel))
@@ -193,17 +184,9 @@ headers.  This can expose sensitive information in your logs.")
                      (list #$(file-append cloudflared "/bin/cloudflared")
                            "tunnel"
                            "--no-autoupdate"
-                           "--metrics" #$metrics
                            "--loglevel" #$log-level
                            #$@extra-tunnel-options
-
                            "run"
-                           #$@(if http2-origin?
-                                  '("--http2-origin")
-                                  '())
-                           #$@(if post-quantum?
-                                  '("--post-quantum")
-                                  '())
                            #$@extra-options)
                      #:user "nobody"
                      #:group "nogroup"
