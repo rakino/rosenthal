@@ -246,6 +246,8 @@ headers.  This can expose sensitive information in your logs.")
 ;;
 
 
+(define-maybe string)
+
 (define-configuration miniflux-configuration
   (miniflux
    (file-like miniflux)
@@ -253,6 +255,9 @@ headers.  This can expose sensitive information in your logs.")
   (log-file
    (string "/var/log/miniflux.log")
    "Where the logs go.")
+  (proxy-url
+   maybe-string
+   "Proxy URL to use.")
   (options
    (alist '())
    "Association list of miniflux configuration options.")
@@ -273,7 +278,7 @@ headers.  This can expose sensitive information in your logs.")
 
 (define miniflux-shepherd-service
   (match-record-lambda <miniflux-configuration>
-      (miniflux log-file options)
+      (miniflux log-file proxy-url options)
     (let ((config-file (mixed-text-file
                         "miniflux.conf"
                         (apply string-append
@@ -286,10 +291,16 @@ headers.  This can expose sensitive information in your logs.")
              (provision '(miniflux))
              (requirement '(postgres user-processes))
              (start #~(make-forkexec-constructor
-                       (list #$miniflux "-config-file" #$config-file)
+                       (list #$(file-append miniflux "/bin/miniflux")
+                             "-config-file" #$config-file)
                        #:user "miniflux"
                        #:group "nogroup"
-                       #:log-file #$log-file))
+                       #:log-file #$log-file
+                       #:environment-variables
+                       '#$(if (maybe-value-set? proxy-url)
+                              (list (string-append "HTTP_PROXY=" proxy-url)
+                                    (string-append "HTTPS_PROXY=" proxy-url))
+                              '())))
              (stop #~(make-kill-destructor)))))))
 
 (define miniflux-service-type
