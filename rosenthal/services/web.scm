@@ -12,9 +12,100 @@
   #:use-module (gnu services databases)
   #:use-module (gnu services docker)
   #:use-module (gnu system shadow)
-  #:export (vaultwarden-configuration
+  #:use-module (rosenthal utils home-services-utils)
+  #:export (misskey-configuration
+            misskey-service-type
+
+            vaultwarden-configuration
             vaultwarden-service-type))
 
+;;
+;; Misskey
+;;
+
+
+(define-configuration misskey-configuration
+  (image
+   (string "misskey/misskey:latest")
+   "Misskey docker image to use.")
+  (config
+   (yaml-config '())
+   "Alist of Misskey configuration, to be serialized to YAML format.")
+  (data-directory
+   (string "/var/lib/misskey")
+   "Directory to store @file{files} in.")
+  (log-file
+   (string "/var/log/misskey.log")
+   "Log file to use.")
+  (no-serialization))
+
+(define %misskey-accounts
+  (list (user-account
+         (name "misskey")
+         (group "docker")
+         (system? #t)
+         (home-directory "/var/empty")
+         (shell (file-append shadow "/sbin/nologin")))))
+
+(define %misskey-postgresql-role
+  (list (postgresql-role
+         (name "misskey")
+         (create-database? #t))))
+
+(define misskey-log-rotations
+  (match-record-lambda <misskey-configuration>
+      (log-file)
+    (list (log-rotation
+           (files (list log-file))))))
+
+(define misskey-activation
+  (match-record-lambda <misskey-configuration>
+      (data-directory)
+    #~(begin
+        (use-modules (guix build utils))
+        (let ((user (getpwnam "misskey")))
+          (unless (file-exists? #$data-directory)
+            (mkdir-p #$data-directory)
+            (chown #$data-directory (passwd:uid user) (passwd:gid user)))))))
+
+(define misskey-oci-containers
+  (match-record-lambda <misskey-configuration>
+      (image config data-directory log-file )
+    (let ((config-file
+           (mixed-text-file
+            "misskey.yaml"
+            #~(string-append #$@(serialize-yaml-config config) "\n"))))
+      (list (oci-container-configuration
+             (user "misskey")
+             (group "docker")
+             (image image)
+             (provision "misskey")
+             (requirement '(postgresql redis))
+             (log-file log-file)
+             (respawn? #t)
+             (network "host")
+             (volumes
+              `((,(string-append data-directory "/files") . "/misskey/files")
+                (,config-file . "/misskey/.config/default.yml"))))))))
+
+(define misskey-service-type
+  (service-type
+   (name 'misskey)
+   (extensions
+    (list (service-extension account-service-type
+                             (const %misskey-accounts))
+          (service-extension postgresql-role-service-type
+                             (const %misskey-postgresql-role))
+          (service-extension rottlog-service-type
+                             misskey-log-rotations)
+          (service-extension activation-service-type
+                             misskey-activation)
+          (service-extension oci-container-service-type
+                             misskey-oci-containers)))
+   (default-value (misskey-configuration))
+   (description "Run Misskey, an interplanetary microblogging platform.")))
+
+
 ;;
 ;; Vaultwarden
 ;;
@@ -86,6 +177,7 @@
       (admin-token database-url port data-directory log-file proxy-url extra-options)
     (list (oci-container-configuration
            (user "vaultwarden")
+           (group "docker")
            (host-environment
             `(,@(if (maybe-value-set? admin-token)
                     `(("ADMIN_TOKEN" . ,admin-token))
