@@ -11,9 +11,12 @@
   #:use-module (gnu services)
   #:use-module (gnu services configuration)
   #:use-module (gnu services shepherd)
+  #:use-module (gnu home services)
+  #:use-module (gnu home services shepherd)
   #:use-module (gnu system shadow)
   #:export (qbittorrent-configuration
-            qbittorrent-service-type))
+            qbittorrent-service-type
+            home-qbittorrent-service-type))
 
 ;;
 ;; qBittorrent
@@ -104,5 +107,42 @@ WebUI\\Password_PBKDF2=\"@ByteArray(ARQ77eY1NUZaQsuDHbIMCA==:0WMRkYTUWVT9wVvdDtH
                              qbittorrent-activation)
           (service-extension account-service-type
                              (const %qbittorrent-accounts))))
+   (default-value (qbittorrent-configuration))
+   (description "Run qBittorrent daemon.")))
+
+(define home-qbittorrent-activation
+  #~(let ((config-file
+           (string-append
+            (or (getenv "XDG_CONFIG_HOME")
+                (string-append user-homedir "/.config"))
+            "/qBittorrent/qBittorrent.conf")))
+      (unless (file-exists? config-file)
+        (mkdir-p (dirname config-file))
+        (copy-file #$%qbittorrent-default-config-file config-file))))
+
+(define home-qbittorrent-shepherd-service
+  (match-record-lambda <qbittorrent-configuration>
+      (qbittorrent webui-port extra-options)
+    (list (shepherd-service
+           (documentation "Run qbittorrent.")
+           (provision '(qbittorrent))
+           (requirement '())
+           (start
+            #~(make-forkexec-constructor
+               (list
+                #$(file-append qbittorrent "/bin/qbittorrent-nox")
+                #$(string-append "--webui-port=" (number->string webui-port))
+                #$@extra-options)))
+           (stop #~(make-kill-destructor #:grace-period 1800))
+           (auto-start? #f)))))
+
+(define home-qbittorrent-service-type
+  (service-type
+   (name 'qbittorrent)
+   (extensions
+    (list (service-extension home-activation-service-type
+                             (const home-qbittorrent-activation))
+          (service-extension home-shepherd-service-type
+                             home-qbittorrent-shepherd-service)))
    (default-value (qbittorrent-configuration))
    (description "Run qBittorrent daemon.")))
