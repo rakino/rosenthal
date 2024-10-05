@@ -225,7 +225,10 @@ headers.  This can expose sensitive information in your logs.")
            (documentation "Run warp-svc.")
            (provision '(cloudflare-warp))
            (start #~(make-forkexec-constructor
-                     (list #$(file-append cloudflare-warp "/bin/warp-svc"))))
+                     (list #$(file-append cloudflare-warp "/bin/warp-svc"))
+                     ;; Logs are written to
+                     ;; /var/lib/cloudflare-warp/cfwarp_service_log.txt.
+                     #:log-file "/dev/null"))
            (stop #~(make-kill-destructor))))))
 
 (define cloudflare-warp-service-type
