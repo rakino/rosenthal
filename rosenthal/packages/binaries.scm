@@ -135,7 +135,7 @@ protocols out-of-the-box.")
                                (find-files
                                 (string-append #$output "/bin")))))))))
     (supported-systems '("x86_64-linux"))
-    (native-inputs (list patchelf))
+    (native-inputs (list patchelf-0.16))
     (inputs (list dbus `(,gcc "lib") glibc nspr nss))
     (home-page "https://1.1.1.1/")
     (synopsis "Cloudflare WARP client")
