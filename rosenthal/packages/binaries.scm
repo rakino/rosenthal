@@ -152,7 +152,7 @@ different needs.")
 (define-public hugo-bin
   (package
     (name "hugo-bin")
-    (version "0.133.0")
+    (version "0.135.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -160,7 +160,7 @@ different needs.")
                     version "/hugo_extended_" version "_linux-amd64.tar.gz"))
               (sha256
                (base32
-                "0vlfvh81yq6ccp3dx95q4d8ha2ir54a89jl7m63l1rwsvvi3099p"))))
+                "14pn6s845dgd6am5kq4iwh2ww3vdg4nngql6a9hgl8waspkzv04j"))))
     (build-system copy-build-system)
     (arguments
      (list #:install-plan #~'(("hugo" "bin/"))
@@ -180,7 +180,7 @@ different needs.")
                                             "/lib")
                              hugo)))))))
     (supported-systems '("x86_64-linux"))
-    (native-inputs (list patchelf))
+    (native-inputs (list patchelf-0.16))
     (inputs (list `(,gcc "lib") glibc))
     (home-page "https://gohugo.io/")
     (synopsis "Static site generator")
