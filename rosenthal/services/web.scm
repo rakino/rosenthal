@@ -43,7 +43,7 @@
    (string "/var/log/jellyfin.log")
    "Path to log file.")
   (extra-options
-   (list-of-strings '())
+   (list '())
    "List of extra options.")
   (no-serialization))
 
