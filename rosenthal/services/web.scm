@@ -42,6 +42,9 @@
   (log-file
    (string "/var/log/jellyfin.log")
    "Path to log file.")
+  (auto-start?
+   (boolean #t)
+   "Whether to start automatically.")
   (extra-options
    (list '())
    "List of extra options.")
@@ -74,7 +77,8 @@
 
 (define jellyfin-oci-containers
   (match-record-lambda <jellyfin-configuration>
-      (cache-directory config-directory proxy-url log-file extra-options)
+      (cache-directory config-directory
+                       proxy-url log-file auto-start? extra-options)
     (list (oci-container-configuration
            (user "jellyfin")
            (group "docker")
@@ -86,6 +90,7 @@
            (image "jellyfin/jellyfin:latest")
            (provision "jellyfin")
            (log-file log-file)
+           (auto-start? auto-start?)
            (respawn? #t)
            (network "host")
            (volumes
