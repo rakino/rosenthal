@@ -149,7 +149,6 @@ command line tool called @code{udcli} that incorporates the library.")
       (propagated-inputs
        (modify-inputs (package-propagated-inputs wlroots)
          (prepend libdrm-for-hyprland)
-         (replace "libinput-minimal" libinput-minimal-1.24.0)
          (replace "wayland-protocols" wayland-protocols-for-hyprland)))
       (native-inputs
        (modify-inputs (package-native-inputs base)
