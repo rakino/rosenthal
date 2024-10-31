@@ -263,7 +263,7 @@ way to use WireGuard and 2FA.")
 (define-public wakapi-bin
   (package
     (name "wakapi-bin")
-    (version "2.11.2")
+    (version "2.12.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -271,7 +271,7 @@ way to use WireGuard and 2FA.")
                     version "/wakapi_linux_amd64.zip"))
               (sha256
                (base32
-                "065nkk0ixkkry6qldy7vai93pc7bi3inwgc5lc1mch3xkwwd8w0g"))))
+                "0kfid6ii9y1sp2w1na55mybyjya1c2k0jgj9h4zf64kg7isv626w"))))
     (build-system copy-build-system)
     (arguments (list #:install-plan #~'(("wakapi" "bin/wakapi"))))
     (supported-systems '("x86_64-linux"))
