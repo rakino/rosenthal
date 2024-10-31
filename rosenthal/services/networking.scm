@@ -383,7 +383,7 @@ list, power save will be disabled."))
    "Path to log file.")
 
   (socket
-   (string "/run/tailscale/tailscaled.sock")
+   (string "/var/run/tailscale/tailscaled.sock")
    "Path of the service UNIX socket.")
 
   (state-directory
