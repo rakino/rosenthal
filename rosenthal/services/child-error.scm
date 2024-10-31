@@ -49,7 +49,7 @@
 
 (define-configuration clash-configuration
   (clash
-   (file-like clash-bin)
+   (file-like mihomo-bin)
    "The clash package.")
 
   (log-file
@@ -70,23 +70,15 @@
   (no-serialization))
 
 (define %clash-accounts
-  (list (user-group (name "clash") (system? #t))
-        (user-account
-         (name "clash")
-         (group "clash")
-         (system? #t)
-         (home-directory "/var/empty")
-         (shell (file-append shadow "/sbin/nologin")))))
+  (list (user-group (name "clash") (system? #t))))
 
 (define clash-activation
   (match-record-lambda <clash-configuration>
-      (clash log-file data-directory config)
+      (data-directory config)
     #~(begin
         (use-modules (guix build utils))
-        (let ((config-dest (string-append #$data-directory "/config.yaml"))
-              (user (getpwnam "clash")))
+        (let ((config-dest (string-append #$data-directory "/config.yaml")))
           (mkdir-p #$data-directory)
-          (chown #$data-directory (passwd:uid user) (passwd:gid user))
           (if (file-exists? config-dest)
               (delete-file config-dest))
           (symlink #$config config-dest)))))
@@ -97,7 +89,7 @@
 
 (define clash-shepherd-service
   (match-record-lambda <clash-configuration>
-      (clash log-file data-directory config shepherd-provision)
+      (clash log-file data-directory shepherd-provision)
     (list (shepherd-service
            (documentation "Run clash.")
            (provision shepherd-provision)
@@ -111,7 +103,6 @@
                                  mihomo-cmd
                                  clash-cmd))
                            "-d" #$data-directory)
-                     #:user "clash"
                      #:group "clash"
                      #:log-file #$log-file))
            (stop #~(make-kill-destructor))
