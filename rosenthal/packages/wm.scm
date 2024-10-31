@@ -3,19 +3,22 @@
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 
 (define-module (rosenthal packages wm)
+  #:use-module (srfi srfi-26)
   #:use-module ((guix licenses) #:prefix license:)
-  #:use-module (guix build-system cmake)
-  #:use-module (guix build-system gnu)
-  #:use-module (guix build-system meson)
-  #:use-module (guix build-system qt)
   #:use-module (guix download)
   #:use-module (guix gexp)
   #:use-module (guix git-download)
   #:use-module (guix packages)
-  #:use-module (guix utils)
+  #:use-module (guix build-system cmake)
+  #:use-module (guix build-system gnu)
+  #:use-module (guix build-system meson)
+  #:use-module (guix build-system qt)
+  #:use-module (gnu packages admin)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
+  #:use-module (gnu packages cmake)
+  #:use-module (gnu packages commencement)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages cpp)
   #:use-module (gnu packages freedesktop)
@@ -36,49 +39,22 @@
   #:use-module (gnu packages wm)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xml)
-  #:use-module (rosenthal packages freedesktop))
+  #:use-module (gnu packages xorg))
 
-(define cairo-for-hyprland
+(define libinput-minimal-for-hyprland
   (package
-    (inherit cairo)
-    (name "cairo")
-    (version "1.18.0")
+    (inherit libinput-minimal)
+    (name "libinput-minimal")
+    (version "1.26.0")
     (source (origin
-              (method url-fetch)
-              (uri (string-append "https://cairographics.org/releases/cairo-"
-                                  version ".tar.xz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://gitlab.freedesktop.org/libinput/libinput.git")
+                    (commit version)))
+              (file-name (git-file-name name version))
               (sha256
                (base32
-                "0r0by563s75xyzz0d0j1nmjqmdrk2x9agk7r57p3v8vqp4v0ffi4"))))
-    (build-system meson-build-system)
-    (arguments
-     (list #:tests? #f
-           #:glib-or-gtk? #t
-           #:configure-flags
-           #~(list "-Dspectre=disabled")))
-    (outputs '("out"))))
-
-(define hwdata-for-hyprland
-  (package
-    (inherit hwdata)
-    (arguments
-     (substitute-keyword-arguments (package-arguments hwdata)
-       ((#:phases _) #~%standard-phases)))
-    (outputs '("out"))))
-
-(define libdrm-for-hyprland
-  (package
-    (inherit libdrm)
-    (name "libdrm")
-    (version "2.4.120")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://dri.freedesktop.org/libdrm/libdrm-"
-                    version ".tar.xz"))
-              (sha256
-               (base32
-                "0yijzgg6rdsa68bz03sw0lcfa2nclv9m3as1cja50wkcyxim7x9v"))))))
+                "010bqvic471prhja1j5xqni9dhqc36ikqpxi8ih0fs13wph70p4s"))))))
 
 (define udis86-for-hyprland
   (let ((revision "186")
@@ -105,59 +81,124 @@ set architectures.  It consists of a C library called @code{libudis86} and a
 command line tool called @code{udcli} that incorporates the library.")
       (license license:bsd-2))))
 
-(define wayland-protocols-for-hyprland
+(define wayland-for-hyprland
   (package
-    (inherit wayland-protocols)
-    (name "wayland-protocols")
-    (version "1.36")
+    (inherit wayland)
+    (name "wayland")
+    (version "1.23.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "https://gitlab.freedesktop.org/wayland/wayland-protocols"
-                    "/-/releases/" version "/downloads/"
-                    "wayland-protocols-" version ".tar.xz"))
+              (uri (string-append "https://gitlab.freedesktop.org/" name
+                                  "/" name  "/-/releases/" version "/downloads/"
+                                  name "-" version ".tar.xz"))
               (sha256
                (base32
-                "14kyxywpfkgpjpkrybs28q1s2prnz30k1b4zap5a3ybrbvh4vzbi"))))))
+                "1vg5h6d94hglh7724q6wx9dpg4y0afvxksankp1hwbcy76lb4kw6"))))))
 
-(define wlroots-for-hyprland
-  (let ((base wlroots)
+(define-public aquamarine
+  (package
+    (name "aquamarine")
+    (version "0.4.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/hyprwm/aquamarine")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "0x1zz1ywchs0awkjkvdgskgqnp6pz5lqwmgr8g0zc0i7inhyg1p3"))))
+    (build-system cmake-build-system)
+    (arguments
+     (list #:cmake cmake-3.30
+           ;; TODO
+           #:tests? #f))
+    (native-inputs
+     (list gcc-13 hyprwayland-scanner pkg-config))
+    (inputs
+     (list eudev
+           hwdata
+           hyprutils
+           libdisplay-info
+           libglvnd
+           libinput-minimal-for-hyprland
+           libseat
+           mesa
+           pixman
+           wayland
+           wayland-protocols-next))
+    (home-page "https://hyprland.org/")
+    (synopsis "Linux rendering backend library")
+    (description
+     "Aquamarine is a C++-only Linux rendering backend library.  It provides
+basic abstractions for an application to render on a Wayland session (in a
+window) or a native DRM session.  It is agnostic of the rendering
+API (Vulkan / OpenGL).")
+    (license license:bsd-3)))
+
+(define-public grimblast
+  (let ((version "0.1")
         (revision "1")
-        (commit "5c1d51c5a2793480f5b6c4341ad0797052aec2ea"))
+        (commit "9d67858b437d4a1299be496d371b66fc0d3e01f6"))
     (package
-      (inherit base)
-      (name "wlroots")
-      (version (git-version "0.18.0-dev-hyprland" revision commit))
+      (name "grimblast")
+      (version (git-version version revision commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/hyprwm/wlroots-hyprland")
+                      (url "https://github.com/hyprwm/contrib")
                       (commit commit)))
                 (file-name (git-file-name name version))
                 (sha256
                  (base32
-                  "0gy0g0kxb3q1wjqrypnvmrxcb4ld3advikchygpwpfp4s9v0mmvd"))))
+                  "1v0v5j7ingx80b5zpyz8ilfhz0kh9dcssnx6iwwl45zzgp915cpv"))))
+      (build-system gnu-build-system)
       (arguments
-       (substitute-keyword-arguments (package-arguments wlroots)
-         ((#:phases phases #~%standard-phases)
-          #~(modify-phases #$phases
-              (add-after 'unpack 'adjust-patching-script
-                (lambda _
-                  (substitute* "patches/apply.sh"
-                    (("apply \\|\\| check_applied \\|\\| fail")
-                     "patch -Np1 < $PATCH"))))))))
-      (propagated-inputs
-       (modify-inputs (package-propagated-inputs wlroots)
-         (prepend libdrm-for-hyprland)
-         (replace "wayland-protocols" wayland-protocols-for-hyprland)))
-      (native-inputs
-       (modify-inputs (package-native-inputs base)
-         (replace "hwdata" `(,hwdata-for-hyprland "out")))))))
+       (list #:tests? #f                ;No tests.
+             #:make-flags
+             #~(list (string-append "PREFIX=" #$output))
+             #:phases
+             #~(modify-phases %standard-phases
+                 (delete 'configure)
+                 (add-after 'unpack 'chdir
+                   (lambda _
+                     (chdir "grimblast")))
+                 (add-after 'chdir 'fix-paths
+                   (lambda* (#:key inputs #:allow-other-keys)
+                     (substitute* "grimblast"
+                       (((string-append "\\<(" (string-join
+                                                '("date"
+                                                  "grim"
+                                                  "slurp"
+                                                  "hyprctl"
+                                                  "hyprpicker"
+                                                  "wl-copy"
+                                                  "jq"
+                                                  "notify-send")
+                                                "|")
+                                        ")\\>")
+                         cmd)
+                        (search-input-file
+                         inputs (string-append "bin/" cmd)))))))))
+      (native-inputs (list scdoc))
+      (inputs
+       (list coreutils-minimal
+             grim
+             jq
+             libnotify
+             slurp
+             hyprland
+             hyprpicker
+             wl-clipboard))
+      (home-page "https://github.com/hyprwm/contrib")
+      (synopsis "Hyprland version of Grimshot")
+      (description "A Hyprland version of Grimshot.")
+      (license license:expat))))
 
 (define-public hyprcursor
   (package
     (name "hyprcursor")
-    (version "0.1.7")
+    (version "0.1.9")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -166,21 +207,90 @@ command line tool called @code{udcli} that incorporates the library.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0s5x3nk2f48xl2z797f8s5jddmhpkg0ndw0jl7mirv9l23xmajag"))))
+                "0z3ar580n630145nq80qw0p8v0kai6knvhi6nr9z0y1jrb07b0ql"))))
     (build-system cmake-build-system)
-    (arguments (list #:tests? #f))      ;TODO: No themes packaged.
-    (inputs (list cairo-for-hyprland hyprlang librsvg libzip tomlplusplus))
+    (arguments (list #:tests? #f))      ;TODO: No themes currently packaged.
     (native-inputs (list gcc-13 pkg-config))
+    (inputs (list cairo hyprlang (librsvg-for-system) libzip tomlplusplus))
     (home-page "https://hyprland.org/")
     (synopsis "Hyprland cursor format, library and utilities")
     (description
      "This package provides Hyprland cursor format, library and utilities.")
     (license license:bsd-3)))
 
+(define-public hyprland
+  (package
+    (name "hyprland")
+    (version "0.44.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/hyprwm/Hyprland"
+                                  "/releases/download/v" version
+                                  "/source-v" version ".tar.gz"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Remove bundled sources and hyprpm utility.
+                  (substitute* "CMakeLists.txt"
+                    (("^add_subdirectory\\(hyprpm\\).*") ""))
+                  (for-each delete-file-recursively
+                            '("hyprpm"
+                              "subprojects"))))
+              (sha256
+               (base32
+                "0qzwdlj0bwj267285l3gjklhafn3bln90z985yws4j5cbp7bj0d9"))))
+    (build-system cmake-build-system)
+    (arguments
+     (list #:cmake cmake-3.30
+           #:tests? #f                  ;No tests.
+           #:phases
+           #~(modify-phases %standard-phases
+               (add-after 'unpack 'fix-path
+                 (lambda* (#:key inputs #:allow-other-keys)
+                   (substitute* "src/xwayland/Server.cpp"
+                     (("Xwayland( \\{\\})" _ suffix)
+                      (string-append
+                       (search-input-file inputs "bin/Xwayland")
+                       suffix)))
+                   (substitute* (find-files "src" "\\.cpp$")
+                     (("/usr/local(/bin/Hyprland)" _ path)
+                      (string-append #$output path))
+                     (("/usr") #$output)
+                     (("\\<(addr2line|cat|lspci|nm)\\>" cmd)
+                      (search-input-file
+                       inputs (string-append "bin/" cmd)))))))))
+    (native-inputs (list gcc-14 hyprwayland-scanner ld-wrapper pkg-config))
+    (inputs
+     (list aquamarine
+           binutils
+           cairo
+           hyprcursor
+           hyprland-protocols
+           hyprlang
+           hyprutils
+           libinput-minimal-for-hyprland
+           libxcursor
+           libxkbcommon
+           mesa
+           pango
+           pciutils
+           udis86-for-hyprland
+           wayland-for-hyprland
+           wayland-protocols-next
+           xcb-util-errors
+           xcb-util-wm
+           xorg-server-xwayland))
+    (home-page "https://hyprland.org/")
+    (synopsis "Dynamic tiling Wayland compositor")
+    (description
+     "Hyprland is a dynamic tiling Wayland compositor that doesn't sacrifice on
+its looks.")
+    (license license:bsd-3)))
+
 (define-public hyprland-protocols
   (package
     (name "hyprland-protocols")
-    (version "0.2")
+    (version "0.4.0")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -189,7 +299,7 @@ command line tool called @code{udcli} that incorporates the library.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "1drjznj7fn6m5m6skhzh0p031cb5x0bb4i56jxnxwpwaa71g1z20"))))
+                "0x86w7z3415qvixfhk9a8v5fnbnxdydzx366qz0mpmfg5h86qyha"))))
     (build-system meson-build-system)
     (home-page "https://hyprland.org")
     (synopsis "Wayland protocol extensions for Hyprland")
@@ -201,83 +311,10 @@ functionality.  Since @code{wlr-protocols} is closed for new submissions, and
 protocols used by Hyprland to bridge the aforementioned gap.")
     (license license:bsd-3)))
 
-(define hyprland-unbundle-wlroots-patch
-  (origin
-    (method url-fetch)
-    (uri (string-append "https://github.com/hyprwm/Hyprland" "/raw/"
-                        "cba1ade848feac44b2eda677503900639581c3f4"
-                        "/nix/patches/meson-build.patch"))
-    (sha256
-     (base32 "0fwvsshz3k6061p3hdl175pydmj80vnw5rm4xfcn64w1ssfq7liw"))))
-
-(define-public hyprland
-  (package
-    (name "hyprland")
-    (version "0.40.0")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/hyprwm/Hyprland"
-                                  "/releases/download/v" version
-                                  "/source-v" version ".tar.gz"))
-              (modules '((guix build utils)))
-              (snippet
-               '(begin
-                  ;; Remove bundled sources and hyprpm utility.
-                  (substitute* "meson.build"
-                    ((".*hyprpm/src.*") ""))
-                  (for-each delete-file-recursively
-                            '("hyprpm"
-                              "subprojects"))))
-              (patches (list hyprland-unbundle-wlroots-patch))
-              (sha256
-               (base32
-                "0f4hs8qzmfmg4lr491b2inanb02xn4xa0gwb8a0ks3m64iwzx589"))))
-    (build-system meson-build-system)
-    (arguments
-     (list #:build-type "release"
-           #:phases
-           #~(modify-phases %standard-phases
-               (add-after 'unpack 'fix-path
-                 (lambda* (#:key inputs #:allow-other-keys)
-                   (substitute* (find-files "src" "\\.cpp$")
-                     (("/usr/local(/bin/Hyprland)" _ path)
-                      (string-append #$output path))
-                     (("/usr") #$output)
-                     (("(execAndGet\\(\")\\<(cat|fc-list|lspci)\\>"
-                       _ pre cmd)
-                      (string-append
-                       pre (search-input-file
-                            inputs (string-append "bin/" cmd))))
-                     (("\\<cc\\>") (search-input-file inputs "bin/gcc"))
-                     ;; NOTE: Add binutils to inputs will override ld-wrapper.
-                     (("(execAndGet\\(\\(\")\\<nm\\>" _ pre)
-                      (string-append pre #$binutils "/bin/nm"))
-                     (("\\<(addr2line|objcopy)\\>" _ cmd)
-                      (string-append #$binutils "/bin/" cmd))))))))
-    (native-inputs (list gcc-13 hyprwayland-scanner jq pkg-config))
-    (inputs
-     (list cairo-for-hyprland
-           gcc-13
-           hyprcursor
-           hyprland-protocols
-           hyprlang
-           pango
-           pciutils
-           udis86-for-hyprland
-           wlroots-for-hyprland))
-    (home-page "https://hyprland.org")
-    (synopsis "Dynamic tiling Wayland compositor based on wlroots")
-    (description
-     "Hyprland is a dynamic tiling Wayland compositor based on @code{wlroots}
-that doesn't sacrifice on its looks.  It supports multiple layouts, fancy
-effects, has a very flexible IPC model allowing for a lot of customization, and
-more.")
-    (license license:bsd-3)))
-
 (define-public hyprlang
   (package
     (name "hyprlang")
-    (version "0.5.0")
+    (version "0.5.3")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -286,9 +323,10 @@ more.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0f8mahg6d6wylybvh6hgayls57miwwv4w69fbaskd8d7dkg2h7kd"))))
+                "0yvfrz3hdyxzhngzhr0bgc5279ra5fv01hbfi6pdj84pz0lpaw02"))))
     (build-system cmake-build-system)
-    (native-inputs (list gcc-13))
+    (native-inputs (list gcc-13 pkg-config))
+    (inputs (list hyprutils))
     (home-page "https://hyprland.org/hyprlang/")
     (synopsis "Official implementation library for hypr config language")
     (description
@@ -296,10 +334,73 @@ more.")
 language used in @code{hyprland}.")
     (license license:gpl3+)))
 
+(define-public hyprpicker
+  (package
+    (name "hyprpicker")
+    (version "0.4.1")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/hyprwm/hyprpicker")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "11r06c62dqj81r27qhf36f3smnjyk3vz8naa655m8khv4qqvmvc2"))))
+    (build-system cmake-build-system)
+    (arguments
+     (list #:tests? #f                  ;No tests.
+           #:phases
+           #~(modify-phases %standard-phases
+               (add-after 'unpack 'fix-path
+                 (lambda* (#:key inputs #:allow-other-keys)
+                   (substitute* "src/clipboard/Clipboard.cpp"
+                     (("wl-copy" cmd)
+                      (search-input-file
+                       inputs (string-append "bin/" cmd)))))))))
+    (native-inputs (list gcc-13 hyprwayland-scanner pkg-config))
+    (inputs
+     (list cairo
+           hyprutils
+           libjpeg-turbo
+           libxkbcommon
+           pango
+           wayland
+           wayland-protocols-next
+           wl-clipboard))
+    (home-page "https://hyprland.org/")
+    (synopsis "@code{wlroots}-compatible Wayland color picker")
+    (description
+     "This package provides a @code{wlroots}-compatible Wayland color picker.")
+    (license license:bsd-3)))
+
+(define-public hyprutils
+  (package
+    (name "hyprutils")
+    (version "0.2.3")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/hyprwm/hyprutils")
+                    (commit (string-append "v" version))))
+              (file-name (git-file-name name version))
+              (sha256
+               (base32
+                "01dh24rf62gb6xm32f7mfv6wx0dxprr1q9y73hvv7xanrjyia2zn"))))
+    (build-system cmake-build-system)
+    (native-inputs (list gcc-13 pkg-config))
+    (inputs (list pixman))
+    (home-page "https://hyprland.org/")
+    (synopsis "C++ library for utilities used across Hyprland ecosystem")
+    (description
+     "This package provides a C++ library for utilities used across Hyprland
+ecosystem.")
+    (license license:bsd-3)))
+
 (define-public hyprwayland-scanner
   (package
     (name "hyprwayland-scanner")
-    (version "0.3.4")
+    (version "0.4.2")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -308,7 +409,7 @@ language used in @code{hyprland}.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0mi0kawfw311ybiy4xipy1n20nvjphkfqzgnd8jxxbkhjkwn0jhg"))))
+                "0r7ay4zjkfyr0xd73wz99qhnqjq7nma98gm51wm9lmai4igw90qw"))))
     (build-system cmake-build-system)
     (arguments (list #:tests? #f))      ;No tests.
     (inputs (list pugixml))
@@ -320,51 +421,10 @@ language used in @code{hyprland}.")
 for C++.")
     (license license:bsd-3)))
 
-(define-public grimblast
-  (package
-    (name "grimblast")
-    (version "0.1")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/hyprwm/contrib")
-                    (commit (string-append "v" version))))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "0ld0sj7ahf9jf8cqzbqkhj3m2w60027ixic24ih26nwy90b5qjwx"))))
-    (build-system gnu-build-system)
-    (arguments
-     (list #:tests? #f                ;no tests
-           #:make-flags
-           #~(list (string-append "PREFIX=" #$output))
-           #:phases
-           #~(modify-phases %standard-phases
-               (delete 'configure)
-               (add-after 'unpack 'chdir
-                 (lambda _
-                   (chdir "grimblast")))
-               (add-after 'install 'wrap
-                 (lambda* (#:key inputs #:allow-other-keys)
-                   (let ((grimblast (string-append #$output "/bin/grimblast")))
-                     (wrap-script grimblast
-                       `("PATH" suffix
-                         ,(map (lambda (program)
-                                 (dirname (search-input-file
-                                           inputs (string-append "/bin/" program))))
-                               '("grim" "slurp" "hyprctl" "wl-copy" "jq"
-                                 "notify-send" "date"))))))))))
-    (native-inputs (list scdoc))
-    (inputs (list grim guile-3.0 jq libnotify slurp hyprland wl-clipboard))
-    (home-page "https://github.com/hyprwm/contrib")
-    (synopsis "Hyprland version of Grimshot")
-    (description "A Hyprland version of Grimshot.")
-    (license license:expat)))
-
 (define-public xdg-desktop-portal-hyprland
   (package
     (name "xdg-desktop-portal-hyprland")
-    (version "1.3.1")
+    (version "1.3.6")
     (source (origin
               (method git-fetch)
               (uri (git-reference
@@ -373,7 +433,7 @@ for C++.")
               (file-name (git-file-name name version))
               (sha256
                (base32
-                "0fdbzxanmmzrvb9wfzg1pdsnlg7dl6v5k8bl44w10n48s7bbbzn0"))))
+                "17ba9jkccyp8gv79ds70khgm5wm6x8zs5m9nkilq4n2j7fsa8cfl"))))
     (build-system qt-build-system)
     (arguments
      (list #:tests? #f                  ;No tests
@@ -385,22 +445,25 @@ for C++.")
                    (substitute* (find-files "." "\\.cp?*$")
                      (("/bin/sh") "sh")
                      (("\\<(sh|grim|hyprctl|slurp)\\>" _ cmd)
-                      (search-input-file inputs (string-append "/bin/" cmd)))
+                      (search-input-file inputs (string-append "bin/" cmd))))
+                   (substitute* "src/shared/ScreencopyShared.cpp"
                      (("\\<(hyprland-share-picker)\\>" _ cmd)
                       (string-append #$output "/bin/" cmd))))))))
     (native-inputs
-     (list gcc-13 pkg-config wayland))
+     (list gcc-13 hyprwayland-scanner pkg-config))
     (inputs
      (list bash-minimal
            grim
            hyprland
            hyprland-protocols
            hyprlang
+           hyprutils
            mesa
            pipewire
            qtwayland
            sdbus-c++
            slurp
+           wayland
            wayland-protocols))
     (home-page "https://github.com/hyprwm/xdg-desktop-portal-hyprland")
     (synopsis "XDG Desktop Portal backend for Hyprland")
