@@ -85,15 +85,15 @@ protocols out-of-the-box.")
 (define-public cloudflare-warp-bin
   (package
     (name "cloudflare-warp-bin")
-    (version "2024.6.497")
+    (version "2024.9.346.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://pkg.cloudflareclient.com"
                                   "/pool/bookworm/main/c/cloudflare-warp/"
-                                  "cloudflare-warp_" version "-1_amd64.deb"))
+                                  "cloudflare-warp_" version "_amd64.deb"))
               (sha256
                (base32
-                "1ry62ck61gn4bxnkih3775pdlndp2ldxwifbjkxbj3wfd4f67xiv"))))
+                "1jrvhb4ka6j0fn9ymnpz1j4anljhl3b15h54np40x0p2d5c28czi"))))
     (build-system copy-build-system)
     (arguments
      (list #:install-plan
@@ -101,11 +101,9 @@ protocols out-of-the-box.")
            #:phases
            #~(modify-phases %standard-phases
                (add-after 'unpack 'unpack-deb
-                 (lambda _
-                   (let ((deb-pack (format #f "cloudflare-warp_~a-1_amd64.deb"
-                                           #$(package-version this-package))))
-                     (invoke "ar" "-x" deb-pack)
-                     (invoke "tar" "-xf" "data.tar.gz"))))
+                 (lambda* (#:key source #:allow-other-keys)
+                   (invoke "ar" "-x" source)
+                   (invoke "tar" "-xf" "data.tar.gz")))
                (add-after 'install 'patch-elf
                  (lambda _
                    (let ((ld.so (string-append #$(this-package-input "glibc")
