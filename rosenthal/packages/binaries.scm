@@ -219,7 +219,7 @@ monster-in-the-middle}.")
 (define-public sing-box-bin
   (package
     (name "sing-box-bin")
-    (version "1.9.4")
+    (version "1.10.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -227,7 +227,7 @@ monster-in-the-middle}.")
                     version "/sing-box-" version "-linux-amd64.tar.gz"))
               (sha256
                (base32
-                "0v67g0zx7q6dld8hr714lmrh33idw23mj50a9szq2v835qrciymj"))))
+                "0cadcqisnfzzf9154bj29ik1sh829rhgqqsjjxa31mgzfzn5ghcy"))))
     (build-system copy-build-system)
     (arguments (list #:install-plan #~'(("sing-box" "bin/"))))
     (supported-systems '("x86_64-linux"))
