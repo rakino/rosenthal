@@ -106,37 +106,57 @@ Rosenthal 頻道定義如下，將其加入 =~/.config/guix/channels.scm= 以由
 
 ** Content / 內容
 *** Packages / 軟件包
++ aquamarine
 + cloudflared
 + dnsmasq-china-list
++ emacs-pcmpl-tailscale
 + emacs-wakatime-mode
 + grimblast
++ grub-efi-luks2
++ hyprcursor
 + hyprland
++ hyprland-protocols
++ hyprlang
++ hyprpicker
++ hyprutils
++ hyprwayland-scanner
 + socks2http
 + tree-sitter-yaml
 + xdg-desktop-portal-hyprland
 
 Binary Packages / 二進制包：
 + clash-bin
-+ clash-meta-bin
 + hugo-bin
++ mihomo-bin
 + shadow-tls-bin
 + sing-box-bin
 + tailscale-bin
 + wakapi-bin
 + wakatime-cli-bin
 
-Non-free Packages / 非自由軟件：
+Nonfree Software / 非自由軟件：
 + cloudflare-warp-bin
 
 *** Services / 服務
++ btrbk-service-type
 + clash-service-type
-+ cloudflare-tunnel-service-type
-+ cloudflare-warp-service-type
 + iwd-service-type
++ jellyfin-service-type
 + miniflux-service-type
++ misskey-service-type
 + qbittorrent-service-type
-+ (home-)shadow-tls-service-type
++ shadow-tls-service-type
 + smartdns-service-type
++ vaultwarden-service-type
+
++ home-qbittorrent-service-type
++ home-shadow-tls-service-type
 + home-socks2http-service-type
-+ tailscale-service-type
 + home-wakapi-service-type
+
+Nonfree Network Services / 非自由網絡服務：
++ cloudflare-tunnel-service-type
++ tailscale-service-type
+
+Nonfree Software / 非自由軟件：
++ cloudflare-warp-service-type
