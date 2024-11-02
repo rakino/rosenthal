@@ -19,6 +19,56 @@
 (define license
   (@@ (guix licenses) license))
 
+(define-public atuin-bin
+  (package
+    (name "atuin-bin")
+    (version "18.3.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/atuinsh/atuin/releases/download/v"
+                    version "/atuin-x86_64-unknown-linux-gnu.tar.gz"))
+              (sha256
+               (base32
+                "14hp673i8in9adahg01bldlwyip7kg5vdnqi5jczinv8ibxnswg3"))))
+    (build-system copy-build-system)
+    (arguments
+     (list #:install-plan #~'(("atuin" "bin/"))
+           #:phases
+           #~(modify-phases %standard-phases
+               (add-after 'install 'patch-elf
+                 (lambda _
+                   (let ((ld.so (string-append #$(this-package-input "glibc")
+                                               #$(glibc-dynamic-linker)))
+                         (runpath (string-join
+                                   (list
+                                    (string-append
+                                     (ungexp
+                                      (this-package-input "gcc") "lib") "/lib")
+                                    (string-append
+                                     #$(this-package-input "glibc") "/lib"))
+                                   ":")))
+                     (define (patch-elf file)
+                       (format #t "Patching ~a ..." file)
+                       (unless (string-contains file ".so")
+                         (invoke "patchelf" "--set-interpreter" ld.so file))
+                       (invoke "patchelf" "--set-rpath" runpath file)
+                       (display " done\n"))
+                     (for-each (lambda (file)
+                                 (patch-elf file))
+                               (find-files
+                                (string-append #$output "/bin")))))))))
+    (supported-systems '("x86_64-linux"))
+    (native-inputs (list patchelf-0.16))
+    (inputs (list `(,gcc "lib") glibc))
+    (home-page "https://atuin.sh/")
+    (synopsis "Sync, search and backup shell history")
+    (description
+     "Atuin replaces existing shell history with a SQLite database, and records
+additional context for commands.  Additionally, it provides optional and fully
+encrypted synchronisation of history between machines, via an Atuin server.")
+    (license license:gpl3)))
+
 (define-public clash-bin
   (package
     (name "clash-bin")
