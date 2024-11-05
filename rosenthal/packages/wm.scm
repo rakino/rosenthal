@@ -39,7 +39,8 @@
   #:use-module (gnu packages wm)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xml)
-  #:use-module (gnu packages xorg))
+  #:use-module (gnu packages xorg)
+  #:export (wayland-for-hyprland))
 
 (define libinput-minimal-for-hyprland
   (package
