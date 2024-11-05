@@ -39,23 +39,7 @@
   #:use-module (gnu packages wm)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xml)
-  #:use-module (gnu packages xorg)
-  #:export (wayland-for-hyprland))
-
-(define libinput-minimal-for-hyprland
-  (package
-    (inherit libinput-minimal)
-    (name "libinput-minimal")
-    (version "1.26.0")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://gitlab.freedesktop.org/libinput/libinput.git")
-                    (commit version)))
-              (file-name (git-file-name name version))
-              (sha256
-               (base32
-                "010bqvic471prhja1j5xqni9dhqc36ikqpxi8ih0fs13wph70p4s"))))))
+  #:use-module (gnu packages xorg))
 
 (define udis86-for-hyprland
   (let ((revision "186")
@@ -81,20 +65,6 @@
 set architectures.  It consists of a C library called @code{libudis86} and a
 command line tool called @code{udcli} that incorporates the library.")
       (license license:bsd-2))))
-
-(define wayland-for-hyprland
-  (package
-    (inherit wayland)
-    (name "wayland")
-    (version "1.23.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://gitlab.freedesktop.org/" name
-                                  "/" name  "/-/releases/" version "/downloads/"
-                                  name "-" version ".tar.xz"))
-              (sha256
-               (base32
-                "1vg5h6d94hglh7724q6wx9dpg4y0afvxksankp1hwbcy76lb4kw6"))))))
 
 (define-public aquamarine
   (package
@@ -122,12 +92,12 @@ command line tool called @code{udcli} that incorporates the library.")
            hyprutils
            libdisplay-info
            libglvnd
-           libinput-minimal-for-hyprland
+           libinput-minimal
            libseat
            mesa
            pixman
            wayland
-           wayland-protocols-next))
+           wayland-protocols))
     (home-page "https://hyprland.org/")
     (synopsis "Linux rendering backend library")
     (description
@@ -269,15 +239,15 @@ API (Vulkan / OpenGL).")
            hyprland-protocols
            hyprlang
            hyprutils
-           libinput-minimal-for-hyprland
+           libinput-minimal
            libxcursor
            libxkbcommon
            mesa
            pango
            pciutils
            udis86-for-hyprland
-           wayland-for-hyprland
-           wayland-protocols-next
+           wayland
+           wayland-protocols
            xcb-util-errors
            xcb-util-wm
            xorg-server-xwayland))
@@ -367,7 +337,7 @@ language used in @code{hyprland}.")
            libxkbcommon
            pango
            wayland
-           wayland-protocols-next
+           wayland-protocols
            wl-clipboard))
     (home-page "https://hyprland.org/")
     (synopsis "@code{wlroots}-compatible Wayland color picker")
