@@ -141,6 +141,7 @@ Nonfree Software / 非自由軟件：
 *** Services / 服務
 + btrbk-service-type
 + clash-service-type
++ docker-mailserver-service-type
 + iwd-service-type
 + jellyfin-service-type
 + miniflux-service-type
