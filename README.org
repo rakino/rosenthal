@@ -106,23 +106,13 @@ Rosenthal 頻道定義如下，將其加入 =~/.config/guix/channels.scm= 以由
 
 ** Content / 內容
 *** Packages / 軟件包
-+ aquamarine
 + cloudflared
 + dnsmasq-china-list
 + emacs-pcmpl-tailscale
 + emacs-wakatime-mode
-+ grimblast
 + grub-efi-luks2
-+ hyprcursor
-+ hyprland
-+ hyprland-protocols
-+ hyprlang
-+ hyprpicker
-+ hyprutils
-+ hyprwayland-scanner
 + socks2http
 + tree-sitter-yaml
-+ xdg-desktop-portal-hyprland
 
 Binary Packages / 二進制包：
 + atuin-bin
