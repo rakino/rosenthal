@@ -6,6 +6,14 @@
 (channel-news
  (version 0)
 
+ (entry                                 ;2024-12-08
+  (commit "162defb8388b4099f6ae8699ec8872f845a2481e")
+  (title (en "Hyprland upstreamed")
+         (en "Hyprland 已合併至上游"))
+  (body (en "All Hyprland packages have been upstreamed to Guix and deleted in
+Rosenthal.")
+        (zh "所有 Hyprland 相關軟件包已合併至 Guix 上游並在 Rosenthal 中刪除。")))
+
  (entry                                 ;2023-07-01
   (commit "ed1058c688a2655521beeba3e6295db2c0c1f274")
   (title (en "@code{qbittorrent-enhanced} upstreamed")
