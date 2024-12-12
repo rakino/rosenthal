@@ -8,6 +8,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system copy)
+  #:use-module (gnu build icecat-extension)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bootstrap)
   #:use-module (gnu packages compression)
@@ -236,6 +237,47 @@ different needs.")
      "Hugo is a static site generator written in Go, optimized for speed and
 designed for flexibility.")
     (license license:asl2.0)))
+
+(define miniflux-injector
+  (package
+    (name "miniflux-injector")
+    (version "2.3.3")
+    (properties '((addon-id . "{528ec801-2e29-4cb9-ae71-5a90503138d1}")))
+    (source
+     (origin
+       (method url-fetch/zipbomb)
+       (uri (string-append
+             "https://github.com/Sevichecc/miniflux-injector/releases/download"
+             "/v" version "/miniflux_injector-" version ".zip"))
+       (sha256
+        (base32
+         "199z441ak6dwy7skgbwc9aa4gfd2r4i22hxfm27s5k3rv7barbvs"))
+       (modules '((guix build utils)))
+       (snippet
+        #~(substitute* "manifest.json"
+            (("homepage_url.*" line)
+             (string-append line "\
+  \"browser_specific_settings\": {
+    \"gecko\": {
+      \"id\": \"" #$(assq-ref properties 'addon-id) "\"
+    }
+  },
+"))))))
+    (build-system copy-build-system)
+    (arguments
+     (list
+      #:install-plan
+      #~'(("." #$(assq-ref (package-properties this-package) 'addon-id)))))
+    (home-page "https://github.com/Sevichecc/miniflux-injector")
+    (synopsis "Injects Miniflux search results into search page")
+    (description
+     "This package provides a browser extension to inject Miniflux search
+results into search page.  Search terms are sent to your Miniflux instance and
+results are added in a sidebar next to search engine results.")
+    (license license:expat)))
+
+(define-public miniflux-injector/icecat
+  (make-icecat-extension miniflux-injector))
 
 (define-public shadow-tls-bin
   (package

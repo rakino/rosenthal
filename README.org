@@ -119,6 +119,7 @@ Binary Packages / 二進制包：
 + clash-bin
 + hugo-bin
 + mihomo-bin
++ miniflux-injector-icecat
 + shadow-tls-bin
 + sing-box-bin
 + tailscale-bin
