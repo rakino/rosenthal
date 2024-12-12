@@ -121,6 +121,7 @@ Binary Packages / 二進制包：
 + mihomo-bin
 + miniflux-injector-icecat
 + shadow-tls-bin
++ sidebery-icecat
 + sing-box-bin
 + tailscale-bin
 + wakapi-bin

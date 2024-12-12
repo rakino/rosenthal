@@ -308,6 +308,35 @@ results are added in a sidebar next to search engine results.")
 monster-in-the-middle}.")
     (license license:expat)))
 
+(define sidebery
+  (package
+    (name "sidebery")
+    (version "5.2.0.9")
+    (source
+     (origin
+       (method url-fetch/zipbomb)
+       (uri (string-append
+             "https://github.com/mbnuqw/sidebery/releases/download/v"
+             (string-drop-right version 2) "/sidebery-" version ".xpi"))
+       (sha256
+        (base32
+         "0wb8rmq25sjnlig3pi1ix2kb8x91pilhh9ag4mk2yqsv9r4gcpw8"))))
+    (build-system copy-build-system)
+    (arguments
+     (list
+      #:install-plan
+      #~'(("." #$(assq-ref (package-properties this-package) 'addon-id)))))
+    (home-page "https://github.com/mbnuqw/sidebery")
+    (synopsis "Manage tabs and bookmarks in sidebar")
+    (description
+     "This package provides a browser extension for managing tabs and bookmarks
+in sidebar.")
+    (license license:expat)
+    (properties '((addon-id . "{3c078156-979c-498b-8990-85f7987dd929}")))))
+
+(define-public sidebery/icecat
+  (make-icecat-extension sidebery))
+
 (define-public sing-box-bin
   (package
     (name "sing-box-bin")
