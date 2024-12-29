@@ -23,7 +23,7 @@
 (define-public atuin-bin
   (package
     (name "atuin-bin")
-    (version "18.3.0")
+    (version "18.4.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -31,7 +31,7 @@
                     version "/atuin-x86_64-unknown-linux-gnu.tar.gz"))
               (sha256
                (base32
-                "14hp673i8in9adahg01bldlwyip7kg5vdnqi5jczinv8ibxnswg3"))))
+                "09rbk68mlfvjqzpydq9i83c05vpvn03s2343mswimc5svlclwslh"))))
     (build-system copy-build-system)
     (arguments
      (list #:install-plan #~'(("atuin" "bin/"))
@@ -68,7 +68,8 @@
      "Atuin replaces existing shell history with a SQLite database, and records
 additional context for commands.  Additionally, it provides optional and fully
 encrypted synchronisation of history between machines, via an Atuin server.")
-    (license license:gpl3)))
+    (license license:gpl3)
+    (properties '((upstream-name . "atuin")))))
 
 (define-public clash-bin
   (package
