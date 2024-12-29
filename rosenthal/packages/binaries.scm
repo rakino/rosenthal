@@ -370,14 +370,14 @@ in sidebar.")
 (define-public tailscale-bin
   (package
     (name "tailscale-bin")
-    (version "1.76.6")
+    (version "1.78.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://pkgs.tailscale.com"
                                   "/stable/tailscale_" version "_amd64.tgz"))
               (sha256
                (base32
-                "1xv1zx171k2vh6dv8hn115r8il2ckhd273x2r88y9fgpg1xkgwh8"))))
+                "12aa8zr8b8x374vg48p6lcfzfwjjf2k9ywvbrdrj2080d2yr3d1x"))))
     (build-system copy-build-system)
     (arguments
      (list #:install-plan
@@ -388,7 +388,10 @@ in sidebar.")
     (description
      "This package provides @command{tailscale}, which brings an easy and secure
 way to use WireGuard and 2FA.")
-    (license license:bsd-3)))
+    (license license:bsd-3)
+    (properties
+     '((release-monitoring-url . "https://github.com/tailscale/tailscale/releases")
+       (upstream-name . "tailscale")))))
 
 (define-public wakapi-bin
   (package
