@@ -313,7 +313,8 @@ results are added in a sidebar next to search engine results.")
     (description
      "Shadow TLS is a proxy to expose real tls handshake to the @acronym{MITM,
 monster-in-the-middle}.")
-    (license license:expat)))
+    (license license:expat)
+    (properties '((upstream-name . "shadow-tls")))))
 
 (define sidebery
   (package
