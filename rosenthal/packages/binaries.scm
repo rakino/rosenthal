@@ -104,7 +104,7 @@ protocols out-of-the-box.")
 (define-public mihomo-bin
   (package
     (name "mihomo-bin")
-    (version "1.18.9")
+    (version "1.19.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -112,7 +112,7 @@ protocols out-of-the-box.")
                     version "/mihomo-linux-amd64-v" version ".gz"))
               (sha256
                (base32
-                "0xq2baqcfd6hnyl1h3q34ymqd227dm06r7dz76s46k7mx7yz7jsb"))))
+                "0y3hwwzgiy81zjil3kgc1llz9s8hlbyy35ykr59za3fyc53l269q"))))
     (build-system copy-build-system)
     (arguments
      (list #:install-plan
@@ -129,7 +129,8 @@ protocols out-of-the-box.")
     (synopsis "Rule-based tunnel in Go")
     (description
      "This package provides @command{mihomo}, another @code{clash} kernel.")
-    (license license:gpl3)))
+    (license license:gpl3)
+    (properties '((upstream-name . "mihomo")))))
 
 (define-public clash-meta-bin
   (deprecated-package "clash-meta-bin" mihomo-bin))
