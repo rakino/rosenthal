@@ -138,7 +138,7 @@ protocols out-of-the-box.")
 (define-public cloudflare-warp-bin
   (package
     (name "cloudflare-warp-bin")
-    (version "2024.9.346.0")
+    (version "2024.12.554.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://pkg.cloudflareclient.com"
@@ -146,7 +146,7 @@ protocols out-of-the-box.")
                                   "cloudflare-warp_" version "_amd64.deb"))
               (sha256
                (base32
-                "1jrvhb4ka6j0fn9ymnpz1j4anljhl3b15h54np40x0p2d5c28czi"))))
+                "00qan4yaq0hcqw8gfv7jgb1vm2milzlfgzh7frp9f9567115fjwc"))))
     (build-system copy-build-system)
     (arguments
      (list #:install-plan
@@ -198,7 +198,11 @@ different needs.")
     (license
      (license "Nonfree"
               "https://www.cloudflare.com/application/terms/"
-              "This is a nonfree license.  Check the URI for details."))))
+              "This is a nonfree license.  Check the URI for details."))
+    (properties
+     '((upstream-name . "cloudflare-warp")
+       (release-monitoring-url
+        . "https://pkg.cloudflareclient.com/dists/bookworm/main/binary-amd64/Packages")))))
 
 (define-public hugo-bin
   (package
