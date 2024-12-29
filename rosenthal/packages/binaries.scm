@@ -396,7 +396,7 @@ way to use WireGuard and 2FA.")
 (define-public wakapi-bin
   (package
     (name "wakapi-bin")
-    (version "2.12.1")
+    (version "2.12.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -404,7 +404,7 @@ way to use WireGuard and 2FA.")
                     version "/wakapi_linux_amd64.zip"))
               (sha256
                (base32
-                "0kfid6ii9y1sp2w1na55mybyjya1c2k0jgj9h4zf64kg7isv626w"))))
+                "0g2in93c0jl3wc0pwx6qpczvvmlqy37n33bmdzbm57pi13r182lf"))))
     (build-system copy-build-system)
     (arguments (list #:install-plan #~'(("wakapi" "bin/wakapi"))))
     (supported-systems '("x86_64-linux"))
@@ -414,7 +414,8 @@ way to use WireGuard and 2FA.")
     (description
      "This package provides @code{wakapi}, a WakaTime-compatible backend for
 coding statistics.")
-    (license license:expat)))
+    (license license:expat)
+    (properties '((upstream-name . "wakapi")))))
 
 (define-public wakatime-cli-bin
   (package
