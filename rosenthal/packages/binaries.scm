@@ -207,7 +207,7 @@ different needs.")
 (define-public hugo-bin
   (package
     (name "hugo-bin")
-    (version "0.136.5")
+    (version "0.140.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -215,7 +215,7 @@ different needs.")
                     version "/hugo_extended_" version "_linux-amd64.tar.gz"))
               (sha256
                (base32
-                "1zvhpyqad402ifa4gyin6apxmyhxg5ww8d7ng7h7q1qbpcd7rgmp"))))
+                "0bzpw3bylgwzgsf570ywvlp9v7z3wh73gb4yw8kjip9s2klnxvvy"))))
     (build-system copy-build-system)
     (arguments
      (list #:install-plan #~'(("hugo" "bin/"))
@@ -242,7 +242,8 @@ different needs.")
     (description
      "Hugo is a static site generator written in Go, optimized for speed and
 designed for flexibility.")
-    (license license:asl2.0)))
+    (license license:asl2.0)
+    (properties '((upstream-name . "hugo")))))
 
 (define miniflux-injector
   (package
