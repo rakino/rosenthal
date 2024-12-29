@@ -348,7 +348,7 @@ in sidebar.")
 (define-public sing-box-bin
   (package
     (name "sing-box-bin")
-    (version "1.10.1")
+    (version "1.10.5")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -356,7 +356,7 @@ in sidebar.")
                     version "/sing-box-" version "-linux-amd64.tar.gz"))
               (sha256
                (base32
-                "0cadcqisnfzzf9154bj29ik1sh829rhgqqsjjxa31mgzfzn5ghcy"))))
+                "1yysfdac9g61qn5pj7r0nyy3jrar55g5h0g7c7k2b0843ldkvd8q"))))
     (build-system copy-build-system)
     (arguments (list #:install-plan #~'(("sing-box" "bin/"))))
     (supported-systems '("x86_64-linux"))
@@ -364,7 +364,8 @@ in sidebar.")
     (synopsis "Universal proxy platform")
     (description
      "This package provides @command{sing-box}, a universal proxy platform.")
-    (license license:gpl3+)))
+    (license license:gpl3+)
+    (properties '((upstream-name . "sing-box")))))
 
 (define-public tailscale-bin
   (package
