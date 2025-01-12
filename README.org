@@ -107,6 +107,7 @@ Rosenthal 頻道定義如下，將其加入 =~/.config/guix/channels.scm= 以由
 ** Content / 內容
 *** Packages / 軟件包
 + cloudflared
++ dinit
 + dnsmasq-china-list
 + emacs-pcmpl-tailscale
 + emacs-wakatime-mode
