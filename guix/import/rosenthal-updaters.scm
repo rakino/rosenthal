@@ -1,32 +1,28 @@
 (define-module (guix import rosenthal-updaters)
-  #:use-module (ice-9 regex)
-  #:use-module (rnrs bytevectors)
   #:use-module (srfi srfi-71)
   #:use-module (web client)
 
   #:use-module (guix packages)
+  #:use-module (guix records)
   #:use-module (guix upstream)
   #:export (%cloudflare-warp-updater))
 
 (define* (cloudflare-warp-import pkg #:key (version #f))
   (let* ((source-uri (assq-ref (package-properties pkg) 'release-monitoring-url))
-         (response content (http-get source-uri))
-         (content (utf8->string content))
+         (response port (http-get source-uri #:streaming? #t))
+         (content (recutils->alist port))
+         (_ (close port))
          (name (package-upstream-name pkg))
          (newest-version
           (or version
-              (match:substring
-               (string-match "\nVersion: (.*)\nLicense" content)
-               1)))
+              (assoc-ref content "Version")))
          (url
           (if version
               (string-append "https://pkg.cloudflareclient.com/"
                              "pool/bookworm/main/c/cloudflare-warp/"
                              "cloudflare-warp_" version "_amd64.deb")
               (string-append "https://pkg.cloudflareclient.com/"
-                             (match:substring
-                              (string-match "\nFilename: (.*)\nSize" content)
-                              1)))))
+                             (assoc-ref content "Filename")))))
     (upstream-source
      (package name)
      (version newest-version)
