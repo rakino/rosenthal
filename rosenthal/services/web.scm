@@ -58,12 +58,6 @@
          (home-directory "/var/empty")
          (shell (file-append shadow "/sbin/nologin")))))
 
-(define jellyfin-log-rotations
-  (match-record-lambda <jellyfin-configuration>
-      (log-file)
-    (list (log-rotation
-           (files (list log-file))))))
-
 (define jellyfin-activation
   (match-record-lambda <jellyfin-configuration>
       (cache-directory config-directory)
@@ -106,8 +100,8 @@
                              (const %jellyfin-accounts))
           (service-extension activation-service-type
                              jellyfin-activation)
-          (service-extension rottlog-service-type
-                             jellyfin-log-rotations)
+          (service-extension log-rotation-service-type
+                             (compose list jellyfin-configuration-log-file))
           (service-extension oci-container-service-type
                              jellyfin-oci-containers)))
    (default-value (jellyfin-configuration))
@@ -147,12 +141,6 @@
          (name "misskey")
          (create-database? #t))))
 
-(define misskey-log-rotations
-  (match-record-lambda <misskey-configuration>
-      (log-file)
-    (list (log-rotation
-           (files (list log-file))))))
-
 (define misskey-activation
   (match-record-lambda <misskey-configuration>
       (data-directory)
@@ -191,8 +179,8 @@
                              (const %misskey-accounts))
           (service-extension postgresql-role-service-type
                              (const %misskey-postgresql-role))
-          (service-extension rottlog-service-type
-                             misskey-log-rotations)
+          (service-extension log-rotation-service-type
+                             (compose list misskey-configuration-log-file))
           (service-extension activation-service-type
                              misskey-activation)
           (service-extension oci-container-service-type
@@ -242,12 +230,6 @@
   (list (postgresql-role
          (name "vaultwarden")
          (create-database? #t))))
-
-(define vaultwarden-log-rotations
-  (match-record-lambda <vaultwarden-configuration>
-      (log-file)
-    (list (log-rotation
-           (files (list log-file))))))
 
 (define vaultwarden-activation
   (match-record-lambda <vaultwarden-configuration>
@@ -308,8 +290,8 @@
                              (const %vaultwarden-postgresql-role))
           (service-extension activation-service-type
                              vaultwarden-activation)
-          (service-extension rottlog-service-type
-                             vaultwarden-log-rotations)
+          (service-extension log-rotation-service-type
+                             (compose list vaultwarden-configuration-log-file))
           (service-extension oci-container-service-type
                              vaultwarden-oci-containers)))
    (default-value (vaultwarden-configuration))

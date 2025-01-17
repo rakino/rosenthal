@@ -83,10 +83,6 @@
               (delete-file config-dest))
           (symlink #$config config-dest)))))
 
-(define (clash-log-rotations config)
-  (list (log-rotation
-         (files (list (clash-configuration-log-file config))))))
-
 (define clash-shepherd-service
   (match-record-lambda <clash-configuration>
       (clash log-file data-directory shepherd-provision)
@@ -120,8 +116,8 @@
                              clash-activation)
           (service-extension account-service-type
                              (const %clash-accounts))
-          (service-extension rottlog-service-type
-                             clash-log-rotations)))
+          (service-extension log-rotation-service-type
+                             (compose list clash-configuration-log-file))))
    (default-value (clash-configuration))
    (description "Run Clash.")))
 
@@ -159,10 +155,6 @@ headers.  This can expose sensitive information in your logs.")
    "List of extra options.")
   (no-serialization))
 
-(define (cloudflare-tunnel-log-rotations config)
-  (list (log-rotation
-         (files (list (cloudflare-tunnel-configuration-log-file config))))))
-
 (define cloudflare-tunnel-shepherd-service
   (match-record-lambda <cloudflare-tunnel-configuration>
       (cloudflared log-level log-file extra-tunnel-options
@@ -192,8 +184,8 @@ headers.  This can expose sensitive information in your logs.")
    (extensions
     (list (service-extension shepherd-root-service-type
                              cloudflare-tunnel-shepherd-service)
-          (service-extension rottlog-service-type
-                             cloudflare-tunnel-log-rotations)))
+          (service-extension log-rotation-service-type
+                             (compose list cloudflare-tunnel-configuration-log-file))))
    (default-value (cloudflare-tunnel-configuration))
    (description "Run cloudflared, the Cloudflare Tunnel daemon.")))
 

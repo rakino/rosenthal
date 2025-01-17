@@ -36,12 +36,6 @@
    "List of extra Docker arguments.")
   (no-serialization))
 
-(define docker-mailserver-log-rotations
-  (match-record-lambda <docker-mailserver-configuration>
-      (log-file)
-    (list (log-rotation
-           (files (list log-file))))))
-
 (define docker-mailserver-oci-containers
   (match-record-lambda <docker-mailserver-configuration>
       (data-directory log-file shepherd-requirement options extra-arguments)
@@ -68,7 +62,7 @@
    (extensions
     (list (service-extension oci-container-service-type
                              docker-mailserver-oci-containers)
-          (service-extension rottlog-service-type
-                             docker-mailserver-log-rotations)))
+          (service-extension log-rotation-service-type
+                             (compose list docker-mailserver-configuration-log-file))))
    (default-value (docker-mailserver-configuration))
    (description "Run Docker Mailserver.")))

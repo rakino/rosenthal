@@ -323,10 +323,6 @@ list, power save will be disabled."))
 (define add-iwd-package
   (compose list iwd-configuration-iwd))
 
-(define (iwd-log-rotations config)
-  (list (log-rotation
-         (files (list (iwd-configuration-log-file config))))))
-
 (define (iwd-shepherd-service config)
   (match-record config <iwd-configuration>
                 (iwd log-file
@@ -358,8 +354,8 @@ list, power save will be disabled."))
                              add-iwd-config-file)
           (service-extension profile-service-type
                              add-iwd-package)
-          (service-extension rottlog-service-type
-                             iwd-log-rotations)))
+          (service-extension log-rotation-service-type
+                             (compose list iwd-configuration-log-file))))
    (default-value (iwd-configuration))
    (description "Run iwd, the iNet wireless daemon.")))
 
@@ -406,10 +402,6 @@ to #f.")
    "List of extra options.")
   (no-serialization))
 
-(define (tailscale-log-rotations config)
-  (list (log-rotation
-         (files (list (tailscale-configuration-log-file config))))))
-
 (define tailscale-shepherd-service
   (match-record-lambda <tailscale-configuration>
       (tailscale iptables log-file socket state-directory
@@ -447,7 +439,7 @@ to #f.")
                              tailscale-shepherd-service)
           (service-extension profile-service-type
                              (compose list tailscale-configuration-tailscale))
-          (service-extension rottlog-service-type
-                             tailscale-log-rotations)))
+          (service-extension log-rotation-service-type
+                             (compose list tailscale-configuration-log-file))))
    (default-value (tailscale-configuration))
    (description "Run tailscaled.")))
