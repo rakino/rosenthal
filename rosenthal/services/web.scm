@@ -6,14 +6,20 @@
   #:use-module (guix gexp)
   #:use-module (guix records)
   #:use-module (gnu packages admin)
+  #:use-module (gnu packages version-control)
+  #:use-module (rosenthal packages web)
   #:use-module (gnu services)
   #:use-module (gnu services admin)
   #:use-module (gnu services configuration)
   #:use-module (gnu services databases)
   #:use-module (gnu services docker)
+  #:use-module (gnu services shepherd)
   #:use-module (gnu system shadow)
   #:use-module (rosenthal utils home-services-utils)
-  #:export (jellyfin-configuration
+  #:export (forgejo-configuration
+            forgejo-service-type
+
+            jellyfin-configuration
             jellyfin-service-type
 
             misskey-configuration
@@ -22,6 +28,100 @@
             vaultwarden-configuration
             vaultwarden-service-type))
 
+;;
+;; Forgejo
+;;
+
+
+(define (file-object? val)
+  (or (string? val)
+      (file-like? val)))
+
+(define list-of-file-likes?
+  (list-of file-like?))
+
+(define-configuration forgejo-configuration
+  (forgejo
+   (file-like forgejo)
+   "Package to provide @file{/bin/forgejo}.")
+  (git-packages
+   (list-of-file-likes (list git git-lfs))
+   "@code{git} and extension packages to install.")
+  (config-file
+   (file-object "/var/lib/forgejo/app.ini")
+   "Filesystem path or file-like object of Forgejo configuration,
+@file{app.ini}.")
+  (no-serialization))
+
+(define %forgejo-accounts
+  (list (user-group (name "forgejo") (system? #t))
+        (user-account
+         (name "forgejo")
+         (group "forgejo")
+         (system? #t)
+         (comment "Forgejo user")
+         (home-directory "/var/lib/forgejo")
+         (shell (file-append shadow "/sbin/nologin")))))
+
+(define %forgejo-postgresql-role
+  (list (postgresql-role
+         (name "forgejo")
+         (create-database? #t))))
+
+(define forgejo-activation
+  #~(begin
+      (use-modules (guix build utils))
+      (let ((dir "/var/lib/forgejo")
+            (user (getpwnam "forgejo")))
+        (mkdir-p dir)
+        (chown dir (passwd:uid user) (passwd:gid user))
+        (chmod dir #o750))))
+
+(define forgejo-shepherd-service
+  (match-record-lambda <forgejo-configuration>
+      (forgejo config-file)
+    (list (shepherd-service
+           (documentation "Run Forgejo.")
+           (provision '(forgejo))
+           (requirement '(loopback postgresql))
+           (start
+            #~(make-forkexec-constructor
+               (list #$(file-append forgejo "/bin/forgejo")
+                     "--config" #$config-file)
+               #:user "forgejo"
+               #:group "forgejo"
+               #:log-file "/var/log/forgejo.log"
+               #:environment-variables
+               '("GIT_EXEC_PATH=/run/current-system/profile/libexec/git-core"
+                 "GIT_SSL_CAINFO=/run/current-system/profile/etc/ssl/certs/ca-certificates.crt"
+                 "HOME=/var/lib/forgejo"
+                 "PATH=/run/current-system/profile/bin"
+                 "SSL_CERT_DIR=/run/current-system/profile/etc/ssl/certs"
+                 "SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt")
+               #:resource-limits '((nofile 524288 524288))))
+           (stop
+            #~(make-kill-destructor))
+           (actions
+            (list (shepherd-configuration-action config-file)))))))
+
+(define forgejo-service-type
+  (service-type
+   (name 'forgejo)
+   (extensions
+    (list (service-extension account-service-type
+                             (const %forgejo-accounts))
+          (service-extension postgresql-role-service-type
+                             (const %forgejo-postgresql-role))
+          (service-extension profile-service-type
+                             forgejo-configuration-git-packages)
+          (service-extension activation-service-type
+                             (const forgejo-activation))
+          (service-extension shepherd-root-service-type
+                             forgejo-shepherd-service)))
+   (default-value (forgejo-configuration))
+   (description "Run Forgejo.")))
+
+
 ;;
 ;; Jellyfin
 ;;
