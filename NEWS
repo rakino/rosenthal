@@ -1,5 +1,5 @@
 ;; -*- mode: scheme -*-
-;; SPDX-FileCopyrightText: 2023 Hilton Chain <hako@ultrarare.space>
+;; SPDX-FileCopyrightText: 2023, 2024 Hilton Chain <hako@ultrarare.space>
 ;;
 ;; SPDX-License-Identifier: GPL-3.0-or-later
 
@@ -9,7 +9,7 @@
  (entry                                 ;2024-12-08
   (commit "162defb8388b4099f6ae8699ec8872f845a2481e")
   (title (en "Hyprland upstreamed")
-         (en "Hyprland 已合併至上游"))
+         (zh "Hyprland 已合併至上游"))
   (body (en "All Hyprland packages have been upstreamed to Guix and deleted in
 Rosenthal.")
         (zh "所有 Hyprland 相關軟件包已合併至 Guix 上游並在 Rosenthal 中刪除。")))

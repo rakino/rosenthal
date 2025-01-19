@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2022, 2024 Hilton Chain <hako@ultrarare.space>
+#
+# SPDX-License-Identifier: CC0-1.0
+
 #+TITLE: Rosenthal - A certain Guix channel
 
 ** About / 關於
@@ -47,19 +51,6 @@ for example:
 
 If you are a [[https://guix.gnu.org/en/manual/devel/en/html_node/Home-Configuration.html][Guix Home]] user, check out the =home-channels-service-type=.
 
-Alternatively, Rosenthal can be used seperately with the following steps:
-
-Clone the repository.
-#+begin_src shell
-  git clone https://codeberg.org/hako/rosenthal.git rosenthal
-  cd rosenthal
-#+end_src
-
-Prefix guix commands with the =pre-inst-env= script.
-#+begin_src shell
-  ./pre-inst-env guix <command>
-#+end_src
-
 Rosenthal 頻道定義如下，將其加入 =~/.config/guix/channels.scm= 以由 =guix pull= 接收更新。
 #+begin_src scheme
   (channel
@@ -90,19 +81,6 @@ Rosenthal 頻道定義如下，將其加入 =~/.config/guix/channels.scm= 以由
 #+end_src
 
 [[https://guix.gnu.org/en/manual/devel/zh-cn/html_node/Home-Configuration.html][Guix Home]] 用戶亦參見服務 =home-channels-service-type= 。
-
-若想獨立於 =channels.scm= 使用頻道，可由如下步驟：
-
-首先克隆 git 倉庫
-#+begin_src shell
-  git clone https://codeberg.org/hako/rosenthal.git rosenthal
-  cd rosenthal
-#+end_src
-
-再由倉庫內 =pre-inst-env= 腳本執行 Guix 命令。
-#+begin_src shell
-  ./pre-inst-env guix <命令>
-#+end_src
 
 ** Content / 內容
 *** Packages / 軟件包

@@ -1,4 +1,8 @@
 ;; -*- mode: scheme -*-
+;; SPDX-FileCopyrightText: 2022, 2024 Hilton Chain <hako@ultrarare.space>
+;;
+;; SPDX-License-Identifier: CC0-1.0
+
 (authorizations
  (version 0)
  (;; primary: "220F 98D9 5E86 204C 0036  DA7B 6DEC 4360 408B 4185"

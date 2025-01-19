@@ -1,3 +1,7 @@
+;; SPDX-FileCopyrightText: 2024 Hilton Chain <hako@ultrarare.space>
+;;
+;; SPDX-License-Identifier: GPL-3.0-or-later
+
 (define-module (rosenthal services file-systems)
   #:use-module (guix gexp)
   #:use-module (gnu packages backup)

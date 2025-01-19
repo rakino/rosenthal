@@ -1,3 +1,0 @@
-*.scm       diff=scheme
-*.scm.in    diff=scheme
-*.texi      diff=texinfo
