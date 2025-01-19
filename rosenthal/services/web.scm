@@ -60,8 +60,7 @@
          (group "forgejo")
          (system? #t)
          (comment "Forgejo user")
-         (home-directory "/var/lib/forgejo")
-         (shell (file-append shadow "/sbin/nologin")))))
+         (home-directory "/var/lib/forgejo"))))
 
 (define %forgejo-postgresql-role
   (list (postgresql-role
