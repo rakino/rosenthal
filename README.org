@@ -1,5 +1,4 @@
 # SPDX-FileCopyrightText: 2022, 2024 Hilton Chain <hako@ultrarare.space>
-#
 # SPDX-License-Identifier: CC0-1.0
 
 #+TITLE: Rosenthal - A certain Guix channel
@@ -89,6 +88,7 @@ Rosenthal 頻道定義如下，將其加入 =~/.config/guix/channels.scm= 以由
 + dnsmasq-china-list
 + emacs-pcmpl-tailscale
 + emacs-wakatime-mode
++ forgejo
 + grub-efi-luks2
 + socks2http
 + tree-sitter-yaml
