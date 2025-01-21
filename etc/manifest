@@ -1,0 +1,31 @@
+;; -*- mode: scheme -*-
+;; SPDX-FileCopyrightText: 2025 Hilton Chain <hako@ultrarare.space>
+;;
+;; SPDX-License-Identifier: CC0-1.0
+
+(specifications->manifest
+ '(
+   "atuin-bin"
+   "cloudflare-warp-bin"
+   "cloudflared"
+   "dinit"
+   "hugo-bin"
+   "mihomo-bin"
+   "shadow-tls-bin"
+   "sing-box-bin"
+   "tailscale-bin"
+   "tree-sitter-yaml"
+   "wakapi-bin"
+   "wakatime-cli-bin"
+
+   ;; TODO: Updater unavailable.
+   ;; "clash-bin"
+   ;; "dnsmasq-china-list"
+   ;; "emacs-pcmpl-tailscale"
+   ;; "emacs-wakatime-mode"
+   ;; "forgejo"
+   ;; "grub-efi-luks2"
+   ;; "miniflux-injector-icecat"
+   ;; "sidebery-icecat"
+   ;; "socks2http"
+   ))
