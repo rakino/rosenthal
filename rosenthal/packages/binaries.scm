@@ -104,7 +104,7 @@ protocols out-of-the-box.")
 (define-public mihomo-bin
   (package
     (name "mihomo-bin")
-    (version "1.19.0")
+    (version "1.19.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -112,7 +112,7 @@ protocols out-of-the-box.")
                     version "/mihomo-linux-amd64-v" version ".gz"))
               (sha256
                (base32
-                "0y3hwwzgiy81zjil3kgc1llz9s8hlbyy35ykr59za3fyc53l269q"))))
+                "0g1qzvxnvbxhpf88ck898yh8avbc2n80jmfj9b713w90sdndj8bi"))))
     (build-system copy-build-system)
     (arguments
      (list #:install-plan
