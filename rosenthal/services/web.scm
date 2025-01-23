@@ -7,6 +7,7 @@
   #:use-module (guix records)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages version-control)
+  #:use-module (rosenthal packages binaries)
   #:use-module (rosenthal packages web)
   #:use-module (gnu services)
   #:use-module (gnu services admin)
@@ -21,6 +22,9 @@
 
             jellyfin-configuration
             jellyfin-service-type
+
+            komga-configuration
+            komga-service-type
 
             misskey-configuration
             misskey-service-type
@@ -205,6 +209,64 @@
                              jellyfin-oci-containers)))
    (default-value (jellyfin-configuration))
    (description "Run Jellyfin, a media system.")))
+
+
+;;;
+;;; Komga
+;;;
+
+
+(define-configuration komga-configuration
+  (komga
+   (file-like komga-bin)
+   "Package to provide @file{/bin/komga}.")
+  (port
+   (integer 25600)
+   "Port to listen to for the API and web interface.")
+  (auto-start?
+   (boolean #t)
+   "Whether to start automatically.")
+  (no-serialization))
+
+(define %komga-accounts
+  (list (user-group (name "komga") (system? #t))
+        (user-account
+         (name "komga")
+         (group "komga")
+         (system? #t)
+         (comment "Komga user")
+         (home-directory "/var/lib/komga"))))
+
+(define komga-shepherd-service
+  (match-record-lambda <komga-configuration>
+      (komga port auto-start?)
+    (list (shepherd-service
+           (documentation "Run Komga.")
+           (provision '(komga))
+           (requirement '(loopback))
+           (start
+            #~(make-forkexec-constructor
+               (list #$(file-append komga "/bin/komga"))
+               #:user "komga"
+               #:group "komga"
+               #:log-file "/var/log/komga.log"
+               #:environment-variables
+               '("KOMGA_CONFIGDIR=/var/lib/komga"
+                 #$(string-append "SERVER_PORT=" (number->string port)))))
+           (stop
+            #~(make-kill-destructor))
+           (auto-start? auto-start?)))))
+
+(define komga-service-type
+  (service-type
+   (name 'komga)
+   (extensions
+    (list (service-extension account-service-type
+                             (const %komga-accounts))
+          (service-extension shepherd-root-service-type
+                             komga-shepherd-service)))
+   (default-value (komga-configuration))
+   (description "Run Komga.")))
 
 
 ;;

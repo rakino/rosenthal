@@ -117,6 +117,7 @@ Nonfree Software / 非自由軟件：
 + iwd-service-type
 + forgejo-service-type
 + jellyfin-service-type
++ komga-service-type
 + miniflux-service-type
 + misskey-service-type
 + qbittorrent-service-type
