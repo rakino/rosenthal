@@ -97,6 +97,7 @@ Binary Packages / 二進制包：
 + atuin-bin
 + clash-bin
 + hugo-bin
++ komga-bin
 + mihomo-bin
 + miniflux-injector-icecat
 + shadow-tls-bin

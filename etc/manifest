@@ -10,6 +10,7 @@
    "cloudflared"
    "dinit"
    "hugo-bin"
+   "komga-bin"
    "mihomo-bin"
    "shadow-tls-bin"
    "sing-box-bin"

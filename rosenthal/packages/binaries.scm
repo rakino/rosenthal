@@ -10,11 +10,13 @@
   #:use-module (guix build-system copy)
   #:use-module (gnu build icecat-extension)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages bootstrap)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages elf)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages java)
   #:use-module (gnu packages nss))
 
 (define license
@@ -244,6 +246,53 @@ different needs.")
 designed for flexibility.")
     (license license:asl2.0)
     (properties '((upstream-name . "hugo")))))
+
+(define-public komga-bin
+  (package
+   (name "komga-bin")
+   (version "1.18.0")
+   (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "https://github.com/gotson/komga/releases/download/" version
+                   "/komga-" version ".jar"))
+             (sha256
+              (base32
+               "1rjjyv2fdb8hqc46az5gw2jgza1p8kg0db98iv4cmmhzgmyljk13"))))
+   (build-system copy-build-system)
+   (arguments
+    (list #:install-plan
+          #~'((#$(string-append "komga-" (package-version this-package) ".jar")
+               "lib/komga/komga.jar"))
+          #:phases
+          #~(modify-phases %standard-phases
+              (replace 'install
+                (lambda* (#:key inputs source #:allow-other-keys)
+                  (let* ((lib (in-vicinity #$output "lib/komga"))
+                         (bin (in-vicinity #$output "bin"))
+                         (jar (in-vicinity lib "komga.jar"))
+                         (exe "komga"))
+                    (mkdir-p lib)
+                    (copy-file source jar)
+                    (call-with-output-file exe
+                      (lambda (port)
+                        (format port "~
+#!~a
+export LC_ALL=C.UTF-8
+exec ~a -jar ~a $@~%"
+                                (search-input-file inputs "bin/bash")
+                                (search-input-file inputs "bin/java")
+                                jar)))
+                    (chmod exe #o555)
+                    (install-file exe bin)))))))
+   (inputs (list bash-minimal openjdk))
+   (home-page "https://komga.org/")
+   (synopsis "Media server for comics/mangas/BDs/magazines/eBooks")
+   (description
+    "Komga is a media server for your comics, mangas, BDs, magazines and
+eBooks.")
+   (license license:expat)
+   (properties '((upstream-name . "komga")))))
 
 (define miniflux-injector
   (package
