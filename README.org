@@ -95,6 +95,7 @@ Rosenthal 頻道定義如下，將其加入 =~/.config/guix/channels.scm= 以由
 
 Binary Packages / 二進制包：
 + atuin-bin
++ bitwarden-icecat
 + clash-bin
 + hugo-bin
 + komga-bin

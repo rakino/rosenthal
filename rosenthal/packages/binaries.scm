@@ -73,6 +73,32 @@ encrypted synchronisation of history between machines, via an Atuin server.")
     (license license:gpl3)
     (properties '((upstream-name . "atuin")))))
 
+(define bitwarden
+  (package
+    (name "bitwarden")
+    (version "2025.1.3")
+    (source (origin
+              (method url-fetch/zipbomb)
+              (uri (string-append "https://github.com/bitwarden/clients"
+                                  "/releases/download/browser-v" version
+                                  "/dist-firefox-" version ".zip"))
+              (sha256
+               (base32
+                "0y1vlwvbjmkcspazs7wz4cswjby9i5qi0zj7c02dl06n6kprl7l6"))))
+    (build-system copy-build-system)
+    (arguments
+     (list #:install-plan
+           #~'(("." #$(assq-ref (package-properties this-package) 'addon-id)))))
+    (home-page "https://bitwarden.com/")
+    (synopsis "Bitwarden client browser extension")
+    (description
+     "This package provides browser extension for Bitwarden client.")
+    (license license:gpl3)
+    (properties '((addon-id . "{446900e4-71c2-419f-a6a7-df9c091e268b}")))))
+
+(define-public bitwarden/icecat
+  (make-icecat-extension bitwarden))
+
 (define-public clash-bin
   (package
     (name "clash-bin")

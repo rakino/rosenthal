@@ -20,6 +20,7 @@
    "wakatime-cli-bin"
 
    ;; TODO: Updater unavailable.
+   ;; "bitwarden-icecat"
    ;; "clash-bin"
    ;; "dnsmasq-china-list"
    ;; "emacs-pcmpl-tailscale"
