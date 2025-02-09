@@ -445,14 +445,14 @@ in sidebar.")
 (define-public tailscale-bin
   (package
     (name "tailscale-bin")
-    (version "1.78.1")
+    (version "1.80.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://pkgs.tailscale.com"
                                   "/stable/tailscale_" version "_amd64.tgz"))
               (sha256
                (base32
-                "12aa8zr8b8x374vg48p6lcfzfwjjf2k9ywvbrdrj2080d2yr3d1x"))))
+                "0sq1zw657chwqgpy3kw6kydnccp8ns6b5a5dhkiacd3wpk61yfq8"))))
     (build-system copy-build-system)
     (arguments
      (list #:install-plan
