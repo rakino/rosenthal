@@ -5,11 +5,15 @@
 (define-module (rosenthal services file-systems)
   #:use-module (guix gexp)
   #:use-module (gnu packages backup)
+  #:use-module (rosenthal packages admin)
   #:use-module (gnu services)
   #:use-module (gnu services configuration)
   #:use-module (gnu services mcron)
+  #:use-module (gnu system pam)
   #:export (btrbk-service-type
-            btrbk-configuration))
+            btrbk-configuration
+
+            dumb-runtime-dir-service-type))
 
 
 ;;
@@ -44,3 +48,44 @@
                              btrbk-mcron-jobs)))
    (default-value (btrbk-configuration))
    (description "Configure and run btrbk hourly.")))
+
+
+;;;
+;;; pam-dumb-runtime-dir
+;;;
+
+
+(define dumb-runtime-dir-activation
+  #~(begin
+      (use-modules (guix build utils))
+      (mkdir-p "/run/user")
+      (chmod "/run/user" #o0755)))
+
+(define dumb-runtime-dir-pam-service
+  (let ((optional-pam-entry
+         (pam-entry
+          (control "optional")
+          (module
+           (file-append
+            pam-dumb-runtime-dir "/lib/security/pam_dumb_runtime_dir.so")))))
+    (list (pam-extension
+           (transformer
+            (lambda (pam)
+              (if (string=? (pam-service-name pam) "login")
+                  (pam-service
+                   (inherit pam)
+                   (session
+                    (cons optional-pam-entry
+                          (pam-service-session pam))))
+                  pam)))))))
+
+(define dumb-runtime-dir-service-type
+  (service-type
+   (name 'dumb-runtime-dir)
+   (extensions
+    (list (service-extension activation-service-type
+                             (const dumb-runtime-dir-activation))
+          (service-extension pam-root-service-type
+                             (const dumb-runtime-dir-pam-service))))
+   (default-value #f)                   ;No default value required.
+   (description "Create @code{XDG_RUNTIME_DIR} on login and never remove it.")))

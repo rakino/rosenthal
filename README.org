@@ -116,6 +116,7 @@ Nonfree Software / 非自由軟件：
 + btrbk-service-type
 + clash-service-type
 + docker-mailserver-service-type
++ dumb-runtime-dir-service-type
 + iwd-service-type
 + forgejo-service-type
 + jellyfin-service-type
