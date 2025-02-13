@@ -9,10 +9,12 @@
   #:use-module (guix gexp)
   #:use-module (guix packages)
   #:use-module (guix utils)
+  #:use-module (guix build-system gnu)
   #:use-module (guix build-system meson)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages linux)
-  #:use-module (gnu packages m4))
+  #:use-module (gnu packages m4)
+  #:use-module (gnu packages pkg-config))
 
 (define-public dinit
   (package
@@ -61,6 +63,42 @@ the user to manage services with dependencies and parallel startup.")
           #~(append #$configure-flags
                     (list "-Dlibseat-logind=disabled")))))
       (propagated-inputs '()))))
+
+(define-public pam-dumb-runtime-dir
+  (package
+    (name "pam-dumb-runtime-dir")
+    (version "1.0.4")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/ifreund/dumb_runtime_dir")
+                    (commit (string-append "v" version))))
+              (sha256
+               (base32
+                "0nrxhvbh3bs4pi4f5h03zw1p1ys19qmmlx263ysly8302wkxk1m4"))))
+    (build-system gnu-build-system)
+    (arguments
+     (list #:tests? #f                  ;No tests.
+           #:make-flags
+           #~(list (string-append "CC=" #$(cc-for-target))
+                   (string-append "DESTDIR=" #$output)
+                   "PREFIX=")
+           #:phases
+           #~(modify-phases %standard-phases
+               ;; No configure script.
+               (delete 'configure))))
+    (native-inputs (list pkg-config))
+    (inputs (list linux-pam))
+    (home-page "https://github.com/ifreund/dumb_runtime_dir")
+    (synopsis "Create @code{XDG_RUNTIME_DIR} on login and never remove it")
+    (description
+     "This package creates an @code{XDG_RUNTIME_DIR} directory on login per
+the freedesktop.org base directory spec.  Flaunts the spec and never removes
+it, even after last logout. This keeps things simple and predictable.
+
+The user is responsible for ensuring that the @file{/run/user} directory
+exists and is only writable by root.")
+    (license license:bsd-0)))
 
 (define-public seatd-sans-logind
   (let ((base seatd))
