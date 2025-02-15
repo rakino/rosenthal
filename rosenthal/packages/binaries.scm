@@ -394,7 +394,7 @@ monster-in-the-middle}.")
 (define sidebery
   (package
     (name "sidebery")
-    (version "5.2.0.9")
+    (version "5.3.1.7")
     (source
      (origin
        (method url-fetch/zipbomb)
@@ -403,7 +403,7 @@ monster-in-the-middle}.")
              (string-drop-right version 2) "/sidebery-" version ".xpi"))
        (sha256
         (base32
-         "0wb8rmq25sjnlig3pi1ix2kb8x91pilhh9ag4mk2yqsv9r4gcpw8"))))
+         "0i2jwar0yb450gslj9rcw8bsldiqdr3r789p0fpmprr1kwzkynwx"))))
     (build-system copy-build-system)
     (arguments
      (list
