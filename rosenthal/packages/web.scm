@@ -33,7 +33,7 @@
 (define-public forgejo
   (package
     (name "forgejo")
-    (version "10.0.0")
+    (version "10.0.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -41,7 +41,7 @@
                     version "/forgejo-src-" version ".tar.gz"))
               (sha256
                (base32
-                "0lwqn8l7dys7nnha47a05n865dsb13f973fkm167m3x8mwm8vm5i"))))
+                "1jmw254xzx15n545cnjpvgdhhr39lfgd2jvmip1lxnl1hkaf6srw"))))
     (build-system go-build-system)
     (arguments
      (list #:go go-1.23
